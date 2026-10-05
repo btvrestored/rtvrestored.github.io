@@ -35,14 +35,11 @@ create table if not exists public.admin_users (
   user_id uuid primary key references auth.users(id) on delete cascade
 );
 
--- Admin Auth UIDs
--- RTV administrators:
--- 94fff4b4-0daf-43e6-9bb3-0fb30efae1a1
--- 01dd7962-c163-46ca-8d62-8bb03edf1bd5
+-- RTV administrators for the current Supabase project
 insert into public.admin_users (user_id)
 values
-  ('94fff4b4-0daf-43e6-9bb3-0fb30efae1a1'::uuid),
-  ('01dd7962-c163-46ca-8d62-8bb03edf1bd5'::uuid)
+  ('560d654c-8128-4167-8091-ed7254f7347d'::uuid),
+  ('60f00afe-c7e0-4ca0-b67c-f2a454df5dc6'::uuid)
 on conflict (user_id) do nothing;
 
 alter table public.messages enable row level security;
