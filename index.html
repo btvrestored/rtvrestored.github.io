@@ -108,16 +108,20 @@
 
   <div class="page">
 
-    <!-- Скоро в эфире -->
-    <section id="live" class="live-section">
-      <div class="live-soon">
-        <div class="live-soon__inner">
-          <span class="live-soon__badge" data-i18n="soon_badge">Скоро</span>
-          <h2 data-i18n="soon_title">Эфир RUSONG TV скоро начнётся</h2>
-          <p data-i18n="soon_text">Мы готовим запуск. Новости и анонсы — в нашем Telegram-канале.</p>
-          <a class="soon-btn" href="https://t.me/rtv_restored" target="_blank" rel="noopener" data-i18n="soon_btn">Следить в Telegram</a>
-        </div>
+    <!-- Прямой эфир -->
+    <section id="live" class="live-section" style="padding:24px 18px 0">
+      <div class="video-frame">
+        <iframe
+          src="https://live.vkvideo.ru/app/embed/rtvrestored"
+          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+          allowfullscreen="true"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          scrolling="no">
+        </iframe>
       </div>
+      <a class="video-fallback" href="https://live.vkvideo.ru/rtvrestored" target="_blank" rel="noopener" data-i18n="video_fallback">Открыть эфир</a>
+      <span class="video-note" data-i18n="video_note">Если плеер заблокирован, используйте прямую ссылку.</span>
     </section>
 
     <!-- О канале -->
@@ -170,6 +174,8 @@
     "nav_about": "About",
     "nav_order": "Order clip",
     "footer": "Presented by BM-PR. Not affiliated with BRIDGE MEDIA.",
+    "video_fallback": "Open live video",
+    "video_note": "If the player is blocked, use this direct link.",
     "hero_tagline": "The Russian-language music channel is coming back",
     "soon_badge": "Coming soon",
     "soon_title": "RUSONG TV is about to go on air",
@@ -192,6 +198,8 @@
     "nav_about": "О телеканале",
     "nav_order": "Заказать клип",
     "footer": "Представлено командой BM-PR. Не имеет отношения к BRIDGE MEDIA.",
+    "video_fallback": "Открыть эфир",
+    "video_note": "Если плеер заблокирован, используйте прямую ссылку.",
     "hero_tagline": "Русскоязычный музыкальный канал возвращается",
     "soon_badge": "Скоро",
     "soon_title": "Эфир RUSONG TV скоро начнётся",
