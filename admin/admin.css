@@ -1,12 +1,12 @@
-/* BRIDGE TV admin — оранжевая тема. Фоны: img/, шрифты: fonts/ */
+/* RUSONG TV admin — зелёная тема. Фоны: img/, шрифты: fonts/ */
 @font-face { font-family: 'Gotham Pro'; font-weight: 400; src: url(fonts/gothampro-400.woff) format('woff'); font-display: swap; }
 @font-face { font-family: 'Gotham Pro'; font-weight: 500; src: url(fonts/gothampro-500.woff) format('woff'); font-display: swap; }
 @font-face { font-family: 'Gotham Pro'; font-weight: 700; src: url(fonts/gothampro-700.woff) format('woff'); font-display: swap; }
 @font-face { font-family: 'Plakat Titul'; font-weight: 800; src: url(fonts/plakattitul.woff) format('woff'); font-display: swap; }
 
 :root {
-  --orange: #ff5a00; --orange-hi: #ff7124; --accent: var(--orange);
-  --panel: rgba(18,12,9,.86); --border: rgba(255,255,255,.14);
+  --orange: #89d800; --orange-hi: #a6e22e; --accent: var(--orange);
+  --panel: rgba(10,14,6,.86); --border: rgba(255,255,255,.14);
   --text: #f4f1ef; --muted: #bdb2ab; --danger: #ff6b5e; --ok: #3ddc84;
   --normal: #c9c9c9; --vip: #ffc247; --glamour: #ff6fb5; --express: #7fe0ff;
   --display: 'Plakat Titul', 'Arial Narrow', Impact, sans-serif;
@@ -36,8 +36,8 @@ svg.ico { width: 20px; height: 20px; flex: none; }
 /* ── Сайдбар ── */
 .side-logo { display: block; width: 100%; max-width: 190px; margin: 0 0 18px 2px; filter: drop-shadow(0 1px 6px rgba(0,0,0,.45)); }
 .nav-section { margin: 14px 0 2px 2px; font-size: 13px; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.75); }
-.nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; background: rgba(18,12,9,.78); color: var(--text); text-decoration: none; font-size: 15px; font-weight: 500; cursor: pointer; }
-.nav-item:hover { background: rgba(18,12,9,.94); }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; background: rgba(10,14,6,.78); color: var(--text); text-decoration: none; font-size: 15px; font-weight: 500; cursor: pointer; }
+.nav-item:hover { background: rgba(10,14,6,.94); }
 .nav-item.active { background: var(--orange); color: #fff; }
 .nav-badge { display: none; margin-left: auto; background: var(--orange); color: #fff; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 10px; }
 .nav-badge.visible { display: block; }
@@ -82,7 +82,7 @@ textarea { min-height: 96px; resize: vertical; }
 
 .widget-links { display: flex; flex-direction: column; gap: 10px; }
 .widget-link { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: rgba(255,255,255,.06); color: inherit; text-decoration: none; }
-.widget-link:hover { background: rgba(255,90,0,.16); }
+.widget-link:hover { background: rgba(137,216,0,.16); }
 .widget-link-info { flex: 1; }
 .widget-link-name { font-size: 15px; font-weight: 500; }
 .widget-link-desc { color: var(--muted); font-size: 13px; }
@@ -93,7 +93,7 @@ textarea { min-height: 96px; resize: vertical; }
 .tool-sep { flex: 1; }
 .filter-pill { padding: 6px 12px; background: none; border: 1px solid var(--border); color: var(--muted); cursor: pointer; }
 .filter-pill:hover { color: var(--text); border-color: var(--text); }
-.filter-pill.active { color: #fff; border-color: var(--orange); background: rgba(255,90,0,.22); }
+.filter-pill.active { color: #fff; border-color: var(--orange); background: rgba(137,216,0,.22); }
 .filter-pill.danger.active { color: var(--danger); border-color: var(--danger); background: rgba(255,107,94,.14); }
 .btn-clear-all { padding: 6px 12px; background: none; border: 1px solid var(--danger); color: var(--danger); cursor: pointer; }
 .btn-clear-all:hover { background: rgba(255,107,94,.14); }
@@ -121,14 +121,14 @@ textarea { min-height: 96px; resize: vertical; }
 .inbox-row.approved, .inbox-row.rejected { opacity: .6; }
 .btn-approve, .btn-reject, .btn-repeat { padding: 6px 12px; background: none; border: 1px solid; cursor: pointer; white-space: nowrap; }
 .btn-approve { color: var(--ok); } .btn-reject { color: var(--danger); } .btn-repeat { color: var(--orange-hi); }
-.btn-approve:hover { background: rgba(61,220,132,.14); } .btn-reject:hover { background: rgba(255,107,94,.14); } .btn-repeat:hover { background: rgba(255,90,0,.16); }
+.btn-approve:hover { background: rgba(61,220,132,.14); } .btn-reject:hover { background: rgba(255,107,94,.14); } .btn-repeat:hover { background: rgba(137,216,0,.16); }
 .status-pill { display: inline-block; margin-top: 4px; padding: 1px 8px; border: 1px solid var(--border); color: var(--muted); font-size: 12px; }
 .status-pending { color: var(--orange-hi); border-color: var(--orange); }
 .status-approved { color: var(--ok); border-color: var(--ok); }
 .status-rejected { color: var(--danger); border-color: var(--danger); }
 
 /* ── Уведомление ── */
-#toast { position: fixed; right: 28px; bottom: 28px; z-index: 1000; padding: 12px 20px; background: #140d0a; border-left: 4px solid var(--orange); box-shadow: 0 6px 24px rgba(0,0,0,.6); opacity: 0; transform: translateY(12px); transition: opacity .25s, transform .25s; pointer-events: none; }
+#toast { position: fixed; right: 28px; bottom: 28px; z-index: 1000; padding: 12px 20px; background: #0c1006; border-left: 4px solid var(--orange); box-shadow: 0 6px 24px rgba(0,0,0,.6); opacity: 0; transform: translateY(12px); transition: opacity .25s, transform .25s; pointer-events: none; }
 #toast.show { opacity: 1; transform: none; }
 
 /* ── Вход ── */
@@ -143,7 +143,7 @@ textarea { min-height: 96px; resize: vertical; }
 .eye { position: absolute; top: 0; right: 0; bottom: 0; width: 44px; display: flex; align-items: center; justify-content: center; background: none; border: 0; color: #555; cursor: pointer; }
 .eye:hover { color: #111; }
 .login-actions { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
-#loginError { flex: 1; min-height: 20px; color: #ff8a5c; font-size: 14px; }
+#loginError { flex: 1; min-height: 20px; color: #a6e22e; font-size: 14px; }
 #loginBtn { padding: 12px 40px; border: 0; cursor: pointer; background: var(--orange); color: #fff; font: 800 16px var(--display); text-transform: uppercase; }
 #loginBtn:hover { background: var(--orange-hi); }
 #loginBtn:disabled { opacity: .5; cursor: not-allowed; }
@@ -160,7 +160,7 @@ textarea { min-height: 96px; resize: vertical; }
   .msg-row, .inbox-row { grid-template-columns: 1fr auto; }
   .msg-time { text-align: left; }
   .search-wrap, .search-wrap input { width: 100%; }
-  .tabbar { display: grid; grid-template-columns: repeat(3, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #140d0a; border-top: 2px solid var(--orange); }
+  .tabbar { display: grid; grid-template-columns: repeat(3, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #0c1006; border-top: 2px solid var(--orange); }
   .tabbar .nav-item { flex-direction: column; gap: 4px; padding: 10px 4px; background: none; font-size: 12px; color: var(--muted); }
   .tabbar .nav-item.active { background: var(--orange); color: #fff; }
   .login-panel { padding: 24px 20px; }

@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#070707">
-  <title>BRIDGE TV - Project Restored</title>
+  <meta name="description" content="RUSONG TV: Project Restored — фанатский проект по возрождению русскоязычного музыкального канала">
+  <title>RUSONG TV — Project Restored</title>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
@@ -18,8 +19,9 @@
     <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
     <noscript><video class="hero-video" autoplay muted loop playsinline aria-hidden="true" src="hero.webm"></video></noscript>
     <script>
-      /* Выбор hero-видео по пропорциям экрана.
-         Широкий экран (16:9, 16:10, ультравайд) -> 1920x1080, почти квадратный (4:3, 5:4) и портрет -> 1440x1080.
+      /* Выбор hero-видео по пропорциям экрана:
+         широкий экран (16:9, 16:10, ультравайд) -> hero.webm / hero-wide.mp4,
+         почти квадратный (4:3, 5:4) и телефон -> hero.mp4.
          Грузится только одно видео; при смене окна/поворота экрана выбор обновляется. */
       (function () {
         var v = document.getElementById('heroVideo');
@@ -66,32 +68,34 @@
         }
       })();
     </script>
-    <div class="hero-overlay"></div>
 
-    <header class="site-header">
-      <div class="logo">
-        <img src="logo.png" alt="BRIDGE TV" height="48">
+  <header class="site-header">
+    <div class="logo">
+      <a href="index.html">
+        <img src="logo.png" alt="RUSONG TV" height="34">
+      </a>
+    </div>
+    <nav id="siteNav">
+        <a href="shows.html" data-i18n="nav_shows">Программы</a>
+        <a href="repeats.html" data-i18n="nav_repeats">Повторы</a>
+        <a href="identity.html" data-i18n="nav_identity">Архив</a>
+        <a href="about.html" data-i18n="nav_about">О телеканале</a>
+        <a href="order.html" data-i18n="nav_order">Заказать клип</a>
+    </nav>
+    <div class="top-right">
+      <div class="lang">
+        language:
+        <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+        <button class="lang-btn active" onclick="setLang('ru')">🇷🇺 RU</button>
       </div>
-      <nav id="siteNav">
-        <a href="shows.html" data-i18n="nav_shows">Shows</a>
-        <a href="repeats.html" data-i18n="nav_repeats">Repeats</a>
-        <a href="identity.html" data-i18n="nav_identity">Archive</a>
-        <a href="about.html" data-i18n="nav_about">About</a>
-        <a href="order.html" data-i18n="nav_order">Order clip</a>
-      </nav>
-      <div class="top-right">
-        <div class="lang">
-          language:
-          <button class="lang-btn active" onclick="setLang('en')">🇬🇧 EN</button>
-          <button class="lang-btn" onclick="setLang('ru')">🇷🇺 RU</button>
-        </div>
-      </div>
+    </div>
     <button class="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="siteNav"><span></span><span></span><span></span></button>
-    </header>
+  </header>
 
+    <div class="hero-overlay"></div>
     <div class="hero-content">
       <h1>Restored from past.<span>Live for future.</span></h1>
-      <p data-i18n="hero_tagline">The alternative music channel is back on air</p>
+      <p data-i18n="hero_tagline">Русскоязычный музыкальный канал возвращается</p>
     </div>
 
     <a class="hero-scroll" href="#live" aria-label="Scroll down">
@@ -104,106 +108,48 @@
 
   <div class="page">
 
-    <section id="live" style="padding:24px 18px 0">
-      <!-- Responsive video wrapper -->
-      <div class="video-frame">
-        <iframe
-          src="https://live.vkvideo.ru/app/embed/btvrestored"
-          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-          allowfullscreen="true"
-          loading="lazy"
-          referrerpolicy="strict-origin-when-cross-origin"
-          scrolling="no">
-        </iframe>
-      </div>
-      <a class="video-fallback" href="https://live.vkvideo.ru/btvrestored" target="_blank" rel="noopener" data-i18n="video_fallback">Open live video</a>
-      <span class="video-note" data-i18n="video_note">If the player is blocked, use this direct link.</span>
-    </section>
-
-    <!-- Viewer message form -->
-    <section style="padding:14px 18px 0">
-      <div id="msg-box" style="
-        background:#f7f7f7;
-        border:1px solid #e0e0e0;
-        border-radius:6px;
-        padding:16px 18px;
-      ">
-        <div style="font-weight:700;font-size:15px;margin-bottom:12px;color:#222;display:flex;align-items:center;gap:8px;">
-          <span style="
-            background:var(--orange);color:#fff;
-            border-radius:3px;padding:1px 8px;font-size:12px;
-            letter-spacing:.04em;
-          ">LIVE</span>
-          <span data-i18n="msg_title">Написать на экран</span>
+    <!-- Скоро в эфире -->
+    <section id="live" class="live-section">
+      <div class="live-soon">
+        <div class="live-soon__inner">
+          <span class="live-soon__badge" data-i18n="soon_badge">Скоро</span>
+          <h2 data-i18n="soon_title">Эфир RUSONG TV скоро начнётся</h2>
+          <p data-i18n="soon_text">Мы готовим запуск. Новости и анонсы — в нашем Telegram-канале.</p>
+          <a class="soon-btn" href="https://t.me/rtv_restored" target="_blank" rel="noopener" data-i18n="soon_btn">Следить в Telegram</a>
         </div>
-
-        <div class="msg-row" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
-          <div class="msg-f msg-f--text" style="flex:2;min-width:180px;">
-            <label style="font-size:11px;color:#888;display:block;margin-bottom:4px;" data-i18n="msg_label_text">Сообщение</label>
-            <input id="msgText" type="text" maxlength="120"
-              style="width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:4px;font-size:14px;font-family:inherit;outline:none;"
-              data-i18n-placeholder="msg_placeholder"
-              placeholder="Ваше сообщение…">
-          </div>
-          <div class="msg-f msg-f--name" style="flex:1;min-width:120px;">
-            <label style="font-size:11px;color:#888;display:block;margin-bottom:4px;" data-i18n="msg_label_name">Имя</label>
-            <input id="msgUser" type="text" maxlength="32"
-              style="width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:4px;font-size:14px;font-family:inherit;outline:none;"
-              data-i18n-placeholder="msg_placeholder_name"
-              placeholder="Ваше имя">
-          </div>
-          <div class="msg-f msg-f--type" style="flex:0 0 auto;">
-            <label style="font-size:11px;color:#888;display:block;margin-bottom:4px;" data-i18n="msg_label_type">Тип</label>
-            <select id="msgType"
-              style="padding:9px 11px;border:1px solid #ddd;border-radius:4px;font-size:14px;font-family:inherit;background:#fff;outline:none;cursor:pointer;">
-              <option value="normal">Normal</option>
-              <option value="vip">⭐ VIP</option>
-              <option value="glamour">💜 Glamour</option>
-              <option value="express">⚡ Express</option>
-            </select>
-          </div>
-          <div class="msg-f msg-f--btn" style="flex:0 0 auto;">
-            <button id="msgBtn" onclick="submitMsg()"
-              style="padding:9px 22px;background:var(--orange);color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;"
-              data-i18n="msg_send">Отправить</button>
-          </div>
-        </div>
-
-        <div class="msg-preview" id="msgPreview" data-i18n="msg_preview_empty">Preview will appear here.</div>
-        <div id="msgFeedback" style="margin-top:10px;font-size:13px;min-height:18px;"></div>
-        <div class="request-status" id="requestStatus"></div>
       </div>
     </section>
 
+    <!-- О канале -->
     <section class="history-today">
       <div class="history-card">
-        <h2 data-i18n="history_title">Today in BRIDGE TV history</h2>
-        <p id="historyText">BRIDGE TV launched on June 1, 2005 and built its own alternative music universe around shows, SMS chat and rare music videos.</p>
+        <h2 data-i18n="about_title">RUSONG TV</h2>
+        <p data-i18n="about_text">В 2010 году для русскоязычной музыки запустили отдельный канал — RUSONG TV. Project Restored — фанатский проект, который возвращает его стиль и атмосферу.</p>
+        <a href="about.html" data-i18n="about_more">Подробнее →</a>
       </div>
     </section>
-
 
     <!-- Наши проекты -->
     <section class="projects">
-      <h2 class="projects-title" data-i18n="projects_title">Our projects</h2>
+      <h2 class="projects-title" data-i18n="projects_title">Наши проекты</h2>
       <div class="projects-grid">
 
-        <a class="proj proj-btv" href="#live">
-          <span class="proj-badge proj-badge--live" data-i18n="badge_live">On air</span>
+        <a class="proj proj-rusong" href="https://t.me/rtv_restored" target="_blank" rel="noopener">
+          <span class="proj-badge" data-i18n="badge_soon">Скоро</span>
           <div class="proj-body">
-            <img class="proj-logo" src="logo.png" alt="BRIDGE TV" onerror="this.style.display='none'">
-            <h3>BRIDGE TV Project Restored</h3>
-            <p data-i18n="proj_btv_text">Live now: archive broadcasts, classic clips and new music in the spirit of the original channel.</p>
+            <img class="proj-logo" src="logo.png" alt="RUSONG TV">
+            <h3>RUSONG TV Project Restored</h3>
+            <p data-i18n="proj_rus_text">Русскоязычный музыкальный канал возвращается. Следите за новостями в Telegram.</p>
+            <span class="proj-link" data-i18n="proj_rus_btn">Следить в Telegram</span>
           </div>
         </a>
 
-        <a class="proj proj-rusong" href="https://t.me/+-7w04rv_6K02MWQy" target="_blank" rel="noopener">
-          <span class="proj-badge" data-i18n="badge_soon">Coming soon</span>
+        <a class="proj proj-btv" href="https://btvrestored.ru/" target="_blank" rel="noopener">
+          <span class="proj-badge proj-badge--live" data-i18n="badge_live">В эфире</span>
           <div class="proj-body">
-            <img class="proj-logo" src="rusong-logo.png" alt="RUSONG TV" onerror="this.style.display='none'">
-            <h3>RUSONG TV Project Restored</h3>
-            <p data-i18n="proj_rus_text">The Russian-language music channel is coming back. Follow the news on Telegram.</p>
-            <span class="proj-link" data-i18n="proj_rus_btn">Follow on Telegram</span>
+            <img class="proj-logo" src="bridge-logo.png" alt="BRIDGE TV">
+            <h3>BRIDGE TV Project Restored</h3>
+            <p data-i18n="proj_btv_text">Сестринский проект: архивные записи, классические клипы и новая музыка в духе оригинального канала.</p>
           </div>
         </a>
 
@@ -211,248 +157,73 @@
     </section>
 
     <footer>
-      <span data-i18n="footer">Presented by BM-PR. Not affiated with BRIDGE MEDIA.</span>
+      <span data-i18n="footer">Представлено командой BM-PR. Не имеет отношения к BRIDGE MEDIA.</span>
     </footer>
   </div>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-client.js"></script>
-  <script>
-    const VIEWER_COOLDOWN_MS = 30000;
-    const VIEWER_COOLDOWN_KEY = 'btv_viewer_last_sent_at';
-    const VIEWER_NAME_KEY = 'btv_viewer_name';
-    const VIEWER_REQUEST_KEY = 'btv_viewer_last_request_key';
-    const BAD_WORDS = ['хуй', 'пизд', 'еба', 'ебл', 'бля', 'сука', 'fuck', 'shit'];
-    let lastSent = Number(localStorage.getItem(VIEWER_COOLDOWN_KEY) || 0);
-    let cooldownTimer = null;
-    let stopWatchingRequest = null;
-    let curLang = 'en';
-
-    function submitMsg() {
-      const text = document.getElementById('msgText').value.trim();
-      const user = document.getElementById('msgUser').value.trim();
-      const type = document.getElementById('msgType').value;
-
-      if (!text) { showFb('\u26a0 ' + (curLang==='ru' ? '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435' : 'Please enter a message'), '#e46500'); return; }
-      if (!user) { showFb('\u26a0 ' + (curLang==='ru' ? '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0438\u043c\u044f' : 'Please enter your name'), '#e46500'); return; }
-      const validationError = validateViewerMessage(text, user);
-      if (validationError) { showFb('\u26a0 ' + validationError, '#e46500'); return; }
-
-      const remaining = getCooldownRemaining();
-      if (remaining > 0) {
-        showFb('\u23f3 ' + cooldownText(remaining), '#999');
-        updateCooldownButton();
-        return;
-      }
-
-      const btn = document.getElementById('msgBtn');
-      btn.disabled = true;
-      btv.submitInboxMessage({
-        message: text,
-        userName: user,
-        displayName: user,
-        smsType: type
-      })
-        .then((key) => {
-          lastSent = Date.now();
-          localStorage.setItem(VIEWER_COOLDOWN_KEY, String(lastSent));
-          localStorage.setItem(VIEWER_NAME_KEY, user);
-          localStorage.setItem(VIEWER_REQUEST_KEY, key);
-          document.getElementById('msgText').value = '';
-          updatePreview();
-          watchRequestStatus(key);
-          showFb('\u2713 ' + (curLang==='ru' ? '\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u043e\u0442\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043e!' : 'Message sent!'), '#2a9a2a');
-          updateCooldownButton();
-        })
-        .catch(function(err) { showFb('\u2715 ' + err.message, '#c0392b'); })
-        .finally(function() { updateCooldownButton(); });
-    }
-
-    function showFb(msg, color) {
-      var el = document.getElementById('msgFeedback');
-      el.textContent = msg; el.style.color = color;
-      setTimeout(function() { el.textContent = ''; }, 4000);
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const savedName = localStorage.getItem(VIEWER_NAME_KEY);
-      if (savedName) document.getElementById('msgUser').value = savedName;
-      document.getElementById('msgText').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') submitMsg();
-      });
-      document.getElementById('msgUser').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') submitMsg();
-      });
-      document.getElementById('msgText').addEventListener('input', updatePreview);
-      document.getElementById('msgUser').addEventListener('input', updatePreview);
-      document.getElementById('msgType').addEventListener('change', updatePreview);
-      updatePreview();
-      renderTodayHistory();
-      watchRequestStatus(localStorage.getItem(VIEWER_REQUEST_KEY));
-      updateCooldownButton();
-    });
-
-    function validateViewerMessage(text, user) {
-      const normalized = (text + ' ' + user).toLowerCase();
-      if (BAD_WORDS.some(function(word) { return normalized.includes(word); })) {
-        return curLang === 'ru' ? '\u0411\u0435\u0437 \u043c\u0430\u0442\u0430, \u043f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430' : 'Please keep it clean';
-      }
-      if (/(.)\1{7,}/i.test(text.replace(/\s+/g, ''))) {
-        return curLang === 'ru' ? '\u0421\u043b\u0438\u0448\u043a\u043e\u043c \u043c\u043d\u043e\u0433\u043e \u043f\u043e\u0432\u0442\u043e\u0440\u043e\u0432' : 'Too many repeated characters';
-      }
-      return '';
-    }
-
-    function updatePreview() {
-      const box = document.getElementById('msgPreview');
-      if (!box) return;
-      const text = document.getElementById('msgText').value.trim();
-      const user = document.getElementById('msgUser').value.trim();
-      box.textContent = text
-        ? (user || (curLang === 'ru' ? '\u0417\u0440\u0438\u0442\u0435\u043b\u044c' : 'Viewer')) + ': ' + text
-        : i18n[curLang].msg_preview_empty;
-    }
-
-    function watchRequestStatus(key) {
-      const box = document.getElementById('requestStatus');
-      if (!box || !key) return;
-      if (stopWatchingRequest) { stopWatchingRequest(); stopWatchingRequest = null; }
-      stopWatchingRequest = btv.watchInboxStatus(key, function(data) {
-        if (!data) {
-          box.classList.remove('visible');
-          return;
-        }
-        const status = data.status || (data.approved ? 'approved' : 'pending');
-        const labels = {
-          pending: curLang === 'ru' ? '\u041e\u0436\u0438\u0434\u0430\u0435\u0442 \u043c\u043e\u0434\u0435\u0440\u0430\u0446\u0438\u0438' : 'Waiting for moderation',
-          approved: curLang === 'ru' ? '\u041e\u0434\u043e\u0431\u0440\u0435\u043d\u043e' : 'Approved',
-          rejected: curLang === 'ru' ? '\u041e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u043e' : 'Rejected'
-        };
-        box.textContent = (curLang === 'ru' ? '\u0421\u0442\u0430\u0442\u0443\u0441 \u0437\u0430\u044f\u0432\u043a\u0438: ' : 'Request status: ') + (labels[status] || labels.pending);
-        box.classList.add('visible');
-      });
-    }
-
-    function renderTodayHistory() {
-      const items = [
-        '\u0412 2005 \u0433\u043e\u0434\u0443 BRIDGE TV \u0432\u044b\u0448\u0435\u043b \u0432 \u044d\u0444\u0438\u0440 \u0438 \u0441\u0442\u0430\u043b \u0430\u043b\u044c\u0442\u0435\u0440\u043d\u0430\u0442\u0438\u0432\u043e\u0439 \u0434\u043b\u044f \u043c\u0443\u0437\u044b\u043a\u0430\u043b\u044c\u043d\u044b\u0445 \u043a\u0430\u043d\u0430\u043b\u043e\u0432 \u0442\u043e\u0433\u043e \u0432\u0440\u0435\u043c\u0435\u043d\u0438.',
-        '\u0412 \u044d\u0444\u0438\u0440\u0435 BRIDGE TV \u0440\u0430\u043d\u044c\u0448\u0435 \u0436\u0438\u043b\u0438 SMS-\u0447\u0430\u0442, \u0437\u0430\u043a\u0430\u0437\u044b \u043a\u043b\u0438\u043f\u043e\u0432 \u0438 \u0444\u0438\u0440\u043c\u0435\u043d\u043d\u044b\u0435 \u043d\u043e\u0447\u043d\u044b\u0435 \u0431\u043b\u043e\u043a\u0438.',
-        'Bridge in Time, Baby Time, Rock Party Time \u0438 Top 10 \u0441\u043e\u0431\u0438\u0440\u0430\u043b\u0438 \u0432\u043e\u043a\u0440\u0443\u0433 \u043a\u0430\u043d\u0430\u043b\u0430 \u0436\u0438\u0432\u0443\u044e \u0430\u0443\u0434\u0438\u0442\u043e\u0440\u0438\u044e.'
-      ];
-      const el = document.getElementById('historyText');
-      if (el) el.textContent = items[new Date().getDate() % items.length];
-    }
-
-    function getCooldownRemaining() {
-      return Math.max(0, VIEWER_COOLDOWN_MS - (Date.now() - lastSent));
-    }
-
-    function cooldownText(ms) {
-      const seconds = Math.ceil(ms / 1000);
-      return curLang === 'ru'
-        ? '\u041f\u043e\u0434\u043e\u0436\u0434\u0438\u0442\u0435 ' + seconds + ' \u0441\u0435\u043a.'
-        : 'Please wait ' + seconds + ' sec.';
-    }
-
-    function updateCooldownButton() {
-      const btn = document.getElementById('msgBtn');
-      if (!btn) return;
-
-      const remaining = getCooldownRemaining();
-      if (remaining > 0) {
-        btn.disabled = true;
-        btn.textContent = Math.ceil(remaining / 1000) + 's';
-        if (!cooldownTimer) cooldownTimer = setInterval(updateCooldownButton, 250);
-        return;
-      }
-
-      btn.disabled = false;
-      btn.textContent = i18n[curLang].msg_send;
-      if (cooldownTimer) {
-        clearInterval(cooldownTimer);
-        cooldownTimer = null;
-      }
-    }
-  </script>
-
   <script>
     var i18n = {
-      en: {
-        nav_shows:           'Shows',
-        nav_repeats:         'Repeats',
-        nav_identity:        'Archive',
-        nav_about:           'About',
-        nav_order:           'Order clip',
-        hero_tagline:        'The alternative music channel is back on air',
-        projects_title:      'Our projects',
-        badge_live:          'On air',
-        badge_soon:          'Coming soon',
-        proj_btv_text:       'Live now: archive broadcasts, classic clips and new music in the spirit of the original channel.',
-        proj_rus_text:       'The Russian-language music channel is coming back. Follow the news on Telegram.',
-        proj_rus_btn:        'Follow on Telegram',
-        footer:              'Presented by BM-PR. Not affiated with BRIDGE MEDIA.',
-        history_title:       'Today in BRIDGE TV history',
-        msg_title:           'Write on screen',
-        msg_label_text:      'Message',
-        msg_label_name:      'Name',
-        msg_label_type:      'Type',
-        msg_send:            'Send',
-        video_fallback:      'Open live video',
-        video_note:          'If the player is blocked, use this direct link.',
-        msg_preview_empty:   'Preview will appear here.',
-        msg_placeholder:     'Your message\u2026',
-        msg_placeholder_name:'Your name'
-      },
-      ru: {
-        nav_shows:           '\u041f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u044b',
-        nav_repeats:         '\u041f\u043e\u0432\u0442\u043e\u0440\u044b',
-        nav_identity:        '\u0410\u0440\u0445\u0438\u0432',
-        nav_about:           '\u041e \u0442\u0435\u043b\u0435\u043a\u0430\u043d\u0430\u043b\u0435',
-        nav_order:           '\u0417\u0430\u043a\u0430\u0437\u0430\u0442\u044c \u043a\u043b\u0438\u043f',
-        hero_tagline:        '\u0410\u043b\u044c\u0442\u0435\u0440\u043d\u0430\u0442\u0438\u0432\u043d\u044b\u0439 \u043c\u0443\u0437\u044b\u043a\u0430\u043b\u044c\u043d\u044b\u0439 \u043a\u0430\u043d\u0430\u043b \u0441\u043d\u043e\u0432\u0430 \u0432 \u044d\u0444\u0438\u0440\u0435',
-        projects_title:      'Наши проекты',
-        badge_live:          'В эфире',
-        badge_soon:          'Скоро',
-        proj_btv_text:       'Сейчас в эфире: архивные записи, классические клипы и новая музыка в духе оригинального канала.',
-        proj_rus_text:       'Русскоязычный музыкальный канал возвращается. Следите за новостями в Telegram.',
-        proj_rus_btn:        'Следить в Telegram',
-        footer:              '\u041f\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043b\u0435\u043d\u043e \u043a\u043e\u043c\u0430\u043d\u0434\u043e\u0439 BM-PR.',
-        history_title:       '\u0421\u0435\u0433\u043e\u0434\u043d\u044f \u0432 \u0438\u0441\u0442\u043e\u0440\u0438\u0438 BRIDGE TV',
-        msg_title:           '\u041d\u0430\u043f\u0438\u0441\u0430\u0442\u044c \u043d\u0430 \u044d\u043a\u0440\u0430\u043d',
-        msg_label_text:      '\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435',
-        msg_label_name:      '\u0418\u043c\u044f',
-        msg_label_type:      '\u0422\u0438\u043f',
-        msg_send:            '\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c',
-        video_fallback:      '\u041e\u0442\u043a\u0440\u044b\u0442\u044c \u044d\u0444\u0438\u0440',
-        video_note:          '\u0415\u0441\u043b\u0438 \u043f\u043b\u0435\u0435\u0440 \u043d\u0435 \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u043b\u0441\u044f, \u043e\u0442\u043a\u0440\u043e\u0439\u0442\u0435 \u044d\u0444\u0438\u0440 \u043f\u043e \u0441\u0441\u044b\u043b\u043a\u0435.',
-        msg_preview_empty:   '\u041f\u0440\u0435\u0434\u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440 \u043f\u043e\u044f\u0432\u0438\u0442\u0441\u044f \u0437\u0434\u0435\u0441\u044c.',
-        msg_placeholder:     '\u0412\u0430\u0448\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435\u2026',
-        msg_placeholder_name:'\u0412\u0430\u0448\u0435 \u0438\u043c\u044f'
-      }
-    };
+  "en": {
+    "nav_shows": "Shows",
+    "nav_repeats": "Repeats",
+    "nav_identity": "Archive",
+    "nav_about": "About",
+    "nav_order": "Order clip",
+    "footer": "Presented by BM-PR. Not affiliated with BRIDGE MEDIA.",
+    "hero_tagline": "The Russian-language music channel is coming back",
+    "soon_badge": "Coming soon",
+    "soon_title": "RUSONG TV is about to go on air",
+    "soon_text": "We are preparing the launch. News and announcements are in our Telegram channel.",
+    "soon_btn": "Follow on Telegram",
+    "about_title": "RUSONG TV",
+    "about_text": "In 2010 a separate channel for Russian-language music — RUSONG TV — was launched. Project Restored is a fan project that brings back its style and atmosphere.",
+    "about_more": "Read more →",
+    "projects_title": "Our projects",
+    "badge_soon": "Coming soon",
+    "badge_live": "On air",
+    "proj_rus_text": "The Russian-language music channel is coming back. Follow the news on Telegram.",
+    "proj_rus_btn": "Follow on Telegram",
+    "proj_btv_text": "Sister project: archive broadcasts, classic clips and new music in the spirit of the original channel."
+  },
+  "ru": {
+    "nav_shows": "Программы",
+    "nav_repeats": "Повторы",
+    "nav_identity": "Архив",
+    "nav_about": "О телеканале",
+    "nav_order": "Заказать клип",
+    "footer": "Представлено командой BM-PR. Не имеет отношения к BRIDGE MEDIA.",
+    "hero_tagline": "Русскоязычный музыкальный канал возвращается",
+    "soon_badge": "Скоро",
+    "soon_title": "Эфир RUSONG TV скоро начнётся",
+    "soon_text": "Мы готовим запуск. Новости и анонсы — в нашем Telegram-канале.",
+    "soon_btn": "Следить в Telegram",
+    "about_title": "RUSONG TV",
+    "about_text": "В 2010 году для русскоязычной музыки запустили отдельный канал — RUSONG TV. Project Restored — фанатский проект, который возвращает его стиль и атмосферу.",
+    "about_more": "Подробнее →",
+    "projects_title": "Наши проекты",
+    "badge_soon": "Скоро",
+    "badge_live": "В эфире",
+    "proj_rus_text": "Русскоязычный музыкальный канал возвращается. Следите за новостями в Telegram.",
+    "proj_rus_btn": "Следить в Telegram",
+    "proj_btv_text": "Сестринский проект: архивные записи, классические клипы и новая музыка в духе оригинального канала."
+  }
+};
 
     function setLang(lang) {
-      curLang = lang;
-      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      if (!i18n[lang]) lang = 'ru';
+      document.querySelectorAll('[data-i18n]').forEach(function (el) {
         var key = el.getAttribute('data-i18n');
         if (i18n[lang][key]) el.textContent = i18n[lang][key];
       });
-      document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
-        var key = el.getAttribute('data-i18n-placeholder');
-        if (i18n[lang][key]) el.placeholder = i18n[lang][key];
-      });
       document.documentElement.lang = lang;
-      document.querySelectorAll('.lang-btn').forEach(function(btn) {
-        btn.classList.toggle('active', btn.getAttribute('onclick').includes("'" + lang + "'"));
+      document.querySelectorAll('.lang-btn').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('onclick').indexOf("'" + lang + "'") !== -1);
       });
-      localStorage.setItem('lang', lang);
-      updatePreview();
-      watchRequestStatus(localStorage.getItem(VIEWER_REQUEST_KEY));
-      updateCooldownButton();
+      try { localStorage.setItem('lang', lang); } catch (e) {}
     }
 
-    var savedLang = localStorage.getItem('lang') || 'en';
+    var savedLang = 'ru';
+    try { savedLang = localStorage.getItem('lang') || 'ru'; } catch (e) {}
     setLang(savedLang);
   </script>
   <script src="menu.js" defer></script>

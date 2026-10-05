@@ -1,40 +1,101 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>404 - BRIDGE TV Project Restored</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&subset=cyrillic,latin&display=swap" rel="stylesheet">
-  <style>
-    :root{--orange:#ff6a00;--black:#070707;--blue:#235fa8}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Roboto,Arial,sans-serif;background:linear-gradient(180deg,#fbfbfb,#d8d8d8);color:#222}
-    a{color:inherit;text-decoration:none}
-    .page{width:min(900px,calc(100% - 24px));margin:14px auto 24px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
-    header{background:var(--black);padding:18px 22px}
-    .logo img{height:48px}
-    main{padding:42px 28px 48px;text-align:center}
-    .code{font-size:82px;font-weight:900;line-height:1;color:var(--orange);letter-spacing:-3px}
-    h1{margin:12px 0 10px;font-size:28px}
-    p{max-width:560px;margin:0 auto 24px;line-height:1.5;color:#666}
-    .btn{display:inline-block;background:var(--orange);color:#fff;border-radius:4px;padding:11px 18px;font-weight:700;box-shadow:0 2px 0 rgba(0,0,0,.16)}
-    .links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:18px;color:var(--blue);font-weight:700}
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#070707">
+  <meta name="description" content="Страница не найдена">
+  <title>404 - RUSONG TV Project Restored</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="inner.css">
 </head>
-<body>
-  <div class="page">
-    <header><a class="logo" href="index.html"><img src="logo.png" alt="BRIDGE TV"></a></header>
-    <main>
-      <div class="code">404</div>
-      <h1>Эта частота молчит</h1>
-      <p>Страница не найдена или уже ушла из эфира. Вернитесь на главную, к программам или откройте прямой эфир.</p>
-      <a class="btn" href="index.html">На главную</a>
-      <div class="links">
-        <a href="shows.html">Программы</a>
-        <a href="order.html">Заказать клип</a>
+<body class="inner page-404">
+  <header class="site-header">
+    <div class="logo">
+      <a href="index.html">
+        <img src="logo.png" alt="RUSONG TV" height="34">
+      </a>
+    </div>
+    <nav id="siteNav">
+        <a href="shows.html" data-i18n="nav_shows">Программы</a>
+        <a href="repeats.html" data-i18n="nav_repeats">Повторы</a>
+        <a href="identity.html" data-i18n="nav_identity">Архив</a>
+        <a href="about.html" data-i18n="nav_about">О телеканале</a>
+        <a href="order.html" data-i18n="nav_order">Заказать клип</a>
+    </nav>
+    <div class="top-right">
+      <div class="lang">
+        language:
+        <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+        <button class="lang-btn active" onclick="setLang('ru')">🇷🇺 RU</button>
       </div>
-    </main>
-  </div>
+    </div>
+    <button class="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="siteNav"><span></span><span></span><span></span></button>
+  </header>
+
+  <main class="inner-main">
+    <div class="err">
+      <div class="code">404</div>
+      <h1 data-i18n="e_h">Эта частота молчит</h1>
+      <p data-i18n="e_p">Страница не найдена или уже ушла из эфира. Вернитесь на главную или загляните в раздел «О телеканале».</p>
+      <div class="actions">
+        <a class="btn primary" href="index.html" data-i18n="e_home">На главную</a>
+        <a class="btn secondary" href="about.html" data-i18n="nav_about">О телеканале</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span data-i18n="footer">Представлено командой BM-PR. Не имеет отношения к BRIDGE MEDIA.</span>
+  </footer>
+
+  <script>
+    var i18n = {
+  "en": {
+    "nav_shows": "Shows",
+    "nav_repeats": "Repeats",
+    "nav_identity": "Archive",
+    "nav_about": "About",
+    "nav_order": "Order clip",
+    "footer": "Presented by BM-PR. Not affiliated with BRIDGE MEDIA.",
+    "e_h": "This frequency is silent",
+    "e_p": "The page was not found or has already left the air. Go back to the home page or visit the About section.",
+    "e_home": "Home"
+  },
+  "ru": {
+    "nav_shows": "Программы",
+    "nav_repeats": "Повторы",
+    "nav_identity": "Архив",
+    "nav_about": "О телеканале",
+    "nav_order": "Заказать клип",
+    "footer": "Представлено командой BM-PR. Не имеет отношения к BRIDGE MEDIA.",
+    "e_h": "Эта частота молчит",
+    "e_p": "Страница не найдена или уже ушла из эфира. Вернитесь на главную или загляните в раздел «О телеканале».",
+    "e_home": "На главную"
+  }
+};
+
+    function setLang(lang) {
+      if (!i18n[lang]) lang = 'ru';
+      document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        var key = el.getAttribute('data-i18n');
+        if (i18n[lang][key]) el.textContent = i18n[lang][key];
+      });
+      document.documentElement.lang = lang;
+      document.querySelectorAll('.lang-btn').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('onclick').indexOf("'" + lang + "'") !== -1);
+      });
+      try { localStorage.setItem('lang', lang); } catch (e) {}
+    }
+
+    var savedLang = 'ru';
+    try { savedLang = localStorage.getItem('lang') || 'ru'; } catch (e) {}
+    setLang(savedLang);
+  </script>
+  <script src="menu.js" defer></script>
 </body>
 </html>

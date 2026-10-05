@@ -3,8 +3,8 @@
   --bg:#f2f2f2;
   --panel:#fff;
   --black:#070707;
-  --orange:#ff6a00;
-  --orange2:#ff8a2d;
+  --accent:#89d800;
+  --accent2:#a6e22e;
   --text:#222;
   --line:#e6e6e6;
   --blue:#235fa8;
@@ -26,7 +26,7 @@ a{color:inherit;text-decoration:none}
   height:100svh;
   min-height:560px;
   overflow:hidden;
-  background:#0b0b0b;
+  background:#0b0b0b url("hero-poster.jpg") center / cover no-repeat;
   color:#fff;
 }
 .hero-video{
@@ -43,7 +43,7 @@ a{color:inherit;text-decoration:none}
   inset:0;
   z-index:1;
   background:
-    linear-gradient(180deg, rgba(0,0,0,.60) 0%, rgba(0,0,0,.22) 38%, rgba(0,0,0,.30) 62%, rgba(0,0,0,.70) 100%);
+    linear-gradient(180deg, rgba(0,0,0,.80) 0%, rgba(0,0,0,.66) 38%, rgba(0,0,0,.68) 62%, rgba(0,0,0,.80) 100%);
 }
 
 /* шапка поверх видео */
@@ -58,7 +58,7 @@ a{color:inherit;text-decoration:none}
   gap:32px;
 }
 .logo{display:flex;align-items:center;flex:0 0 auto}
-.logo img{display:block;height:44px;width:auto}
+.logo img{display:block;height:34px;width:auto;max-width:100%}
 .site-header nav{
   display:flex;
   gap:30px;
@@ -73,7 +73,7 @@ a{color:inherit;text-decoration:none}
   text-shadow:0 1px 6px rgba(0,0,0,.45);
   transition:border-color .15s, color .15s;
 }
-.site-header nav a:hover{border-color:var(--orange)}
+.site-header nav a:hover{border-color:var(--accent)}
 .top-right{
   flex:0 0 auto;
   font-size:13px;
@@ -123,7 +123,7 @@ a{color:inherit;text-decoration:none}
   letter-spacing:-1px;
   text-shadow:0 2px 24px rgba(0,0,0,.45);
 }
-.hero-content h1 span{display:block;color:var(--orange)}
+.hero-content h1 span{display:block;color:var(--accent)}
 .hero-content p{
   margin:0;
   max-width:760px;
@@ -190,7 +190,7 @@ a{color:inherit;text-decoration:none}
   justify-content:center;
   margin-top:10px;
   padding:10px 16px;
-  background:var(--orange);
+  background:var(--accent);
   border-radius:6px;
   font-size:13px;
   color:#fff;
@@ -198,7 +198,7 @@ a{color:inherit;text-decoration:none}
   box-shadow:0 2px 0 rgba(0,0,0,.16);
   transition:background .15s;
 }
-.video-fallback:hover{background:var(--orange2)}
+.video-fallback:hover{background:var(--accent2)}
 .video-note{
   display:inline-block;
   margin-left:10px;
@@ -209,10 +209,10 @@ a{color:inherit;text-decoration:none}
 /* форма «Написать на экран» (часть стилей задана inline в HTML) */
 #msg-box input:focus,
 #msg-box select:focus{
-  border-color:var(--orange) !important;
-  box-shadow:0 0 0 3px rgba(255,106,0,.18);
+  border-color:var(--accent) !important;
+  box-shadow:0 0 0 3px rgba(137,216,0,.18);
 }
-#msgBtn:hover:not(:disabled){background:var(--orange2) !important}
+#msgBtn:hover:not(:disabled){background:var(--accent2) !important}
 #msgBtn:disabled{opacity:.6;cursor:not-allowed !important}
 
 .msg-preview{
@@ -243,7 +243,7 @@ a{color:inherit;text-decoration:none}
   color:#fff;
   border-radius:8px;
   padding:18px 20px;
-  border-left:6px solid var(--orange);
+  border-left:6px solid var(--accent);
 }
 .history-card h2{margin:0 0 8px;font-size:20px;color:#fff}
 .history-card p{margin:0;line-height:1.5;color:#e5e5e5}
@@ -260,7 +260,7 @@ a{color:inherit;text-decoration:none}
 @media (max-width:860px){
   .hero-screen{height:86vh;height:86svh;min-height:480px}
   .site-header{flex-wrap:wrap;gap:12px 16px;padding:16px 0}
-  .logo img{height:36px}
+  .logo img{height:28px}
   .top-right{margin-left:auto}
   .site-header nav{order:3;width:100%;margin-left:0;gap:8px 20px;flex-wrap:wrap;font-size:14px}
   .hero-scroll{bottom:72px}
@@ -305,7 +305,7 @@ a{color:inherit;text-decoration:none}
    .proj-rusong{background-image:linear-gradient(...), url("rusong-bg.jpg")} */
 .proj-btv{
   background:
-    radial-gradient(520px 260px at 90% 0%, rgba(255,106,0,.55), transparent 65%),
+    radial-gradient(520px 260px at 90% 0%, rgba(137,216,0,.55), transparent 65%),
     linear-gradient(160deg, #1a1a1a 0%, #070707 100%);
 }
 .proj-rusong{
@@ -332,7 +332,7 @@ a{color:inherit;text-decoration:none}
   border:1px solid rgba(255,255,255,.3);
   border-radius:20px;
 }
-.proj-badge--live{background:var(--orange);border-color:var(--orange)}
+.proj-badge--live{background:var(--accent);border-color:var(--accent)}
 .proj-body{position:relative;width:100%}
 .proj-logo{display:block;height:46px;width:auto;max-width:70%;margin:0 0 14px}
 .proj h3{margin:0 0 8px;font-size:20px;font-weight:900;letter-spacing:-.3px}
@@ -416,7 +416,7 @@ a,button,select{-webkit-tap-highlight-color:transparent;touch-action:manipulatio
 
 @media (max-width:480px){
   .site-header{gap:8px 12px}
-  .logo img{height:32px}
+  .logo img{height:26px}
 }
 
 /* узкие ноутбуки / планшеты в альбомной ориентации (861–1000px): меню переносится на 2-ю строку */
@@ -483,7 +483,7 @@ a,button,select{-webkit-tap-highlight-color:transparent;touch-action:manipulatio
     opacity:0;transform:translateY(14px);
     transition:opacity .35s ease, transform .35s ease, color .15s, border-color .15s;
   }
-  .site-header nav a.active{color:var(--orange);border-bottom-color:var(--orange)}
+  .site-header nav a.active{color:var(--accent);border-bottom-color:var(--accent)}
 
   /* выбор языка — внизу меню */
   .top-right{
@@ -515,3 +515,71 @@ a,button,select{-webkit-tap-highlight-color:transparent;touch-action:manipulatio
 @media (max-width:860px) and (prefers-reduced-motion:reduce){
   .burger span,.site-header nav,.site-header nav a,.top-right{transition:none !important}
 }
+
+
+/* ======================================================
+   RUSONG TV: Project Restored — доработки
+   ====================================================== */
+/* BRIDGE-плитка сохраняет свои фирменные оранжевые цвета */
+.proj-btv{
+  background:
+    radial-gradient(520px 260px at 90% 0%, rgba(255,106,0,.55), transparent 65%),
+    linear-gradient(160deg, #1a1a1a 0%, #070707 100%);
+}
+.proj-btv .proj-badge--live{background:#ff6a00;border-color:#ff6a00;color:#fff}
+
+/* на ярко-зелёном белый текст плохо читается — тёмный */
+.video-fallback{color:#0b0f00}
+
+/* блок «Скоро в эфире» вместо плеера */
+.live-section{padding:24px 18px 0}
+.live-soon{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  min-height:clamp(280px, 40vw, 400px);
+  padding:32px 22px;
+  border-radius:10px;
+  overflow:hidden;
+  color:#fff;
+  background:
+    radial-gradient(640px 300px at 50% 0%, rgba(137,216,0,.30), transparent 70%),
+    linear-gradient(rgba(6,9,3,.80), rgba(6,9,3,.90)),
+    url("hero-poster.jpg") center / cover no-repeat,
+    #080a06;
+  box-shadow:0 6px 24px rgba(0,0,0,.18);
+}
+.live-soon__inner{max-width:560px}
+.live-soon__badge{
+  display:inline-block;margin-bottom:16px;padding:3px 12px;
+  font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:#c8f26a;border:1px solid rgba(137,216,0,.65);background:rgba(137,216,0,.16);
+  border-radius:20px;
+}
+.live-soon h2{margin:0 0 10px;font-size:clamp(22px, 3.2vw, 32px);font-weight:900;letter-spacing:-.4px;line-height:1.15}
+.live-soon p{margin:0 auto 22px;font-size:16px;line-height:1.6;color:rgba(255,255,255,.84)}
+.soon-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:48px;padding:0 26px;
+  font-size:15px;font-weight:700;
+  color:#0b0f00;background:var(--accent);
+  border-radius:8px;
+  box-shadow:0 2px 0 rgba(0,0,0,.2);
+  transition:background .15s, transform .15s;
+}
+.soon-btn:hover{background:var(--accent2);transform:translateY(-2px)}
+
+/* ссылка в карточке «о канале» */
+.history-card a{
+  display:inline-block;margin-top:12px;padding:6px 0 4px;
+  font-weight:700;color:var(--accent);border-bottom:2px solid var(--accent);
+  transition:color .15s;
+}
+.history-card a:hover{color:var(--accent2);border-color:var(--accent2)}
+
+@media (max-width:640px){
+  .live-section{padding:18px 14px 0}
+  .live-soon{padding:26px 16px;min-height:300px}
+  .soon-btn{width:100%}
+  .history-today,.projects{padding-left:14px;padding-right:14px}
+}
+@media (hover:none){ .soon-btn:hover{transform:none} }

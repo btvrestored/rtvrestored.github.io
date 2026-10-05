@@ -13,8 +13,8 @@
  * and BEFORE your own <script> block that calls window.btv.*
  * ========================================================================== */
 
-const SUPABASE_URL = 'https://cmjtxlevjnwugeyttexa.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_JPGJOa51xwNAm7Dk55F3Iw_IcNhhdxw'; // Settings → API Keys → Publishable key
+const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co'; // TODO: свой проект Supabase для RUSONG
+const SUPABASE_PUBLISHABLE_KEY = 'YOUR_PUBLISHABLE_KEY'; // Settings → API Keys → Publishable key
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
