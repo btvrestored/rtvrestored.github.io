@@ -1,163 +1,137 @@
--- ============================================================================
--- BRIDGE TV — Firebase Realtime Database → Supabase (Postgres) schema
---
--- Mirrors database.rules.json:
---   admins   -> gate table, never directly readable/writable by clients
---   inbox    -> viewer moderation queue (anyone can submit a pending item,
---               only admins can list/update/delete; a viewer can check the
---               status of their own submission via get_inbox_status())
---   messages -> public on-air feed (anyone reads, only admins write)
---
--- Run this once in the Supabase SQL editor on a fresh project.
--- ============================================================================
+-- RTV Supabase base schema
+-- Apply this in the RTV Supabase project's SQL Editor.
+-- Admin Auth UID is intentionally NOT hard-coded: the new Supabase project
+-- may have a different Auth user UUID.
 
-create extension if not exists pgcrypto;
-
--- ----------------------------------------------------------------------------
--- ADMINS
--- Equivalent of Firebase's "admins": { ".read": false, ".write": false }.
--- No RLS policies are created for this table, so — aside from the
--- service_role key, which always bypasses RLS — nobody can read or write it
--- directly through the API. Add admins manually (see bottom of file).
--- ----------------------------------------------------------------------------
-create table if not exists public.admins (
-  user_id    uuid primary key references auth.users(id) on delete cascade,
-  created_at timestamptz not null default now()
-);
-
-alter table public.admins enable row level security;
-
-create or replace function public.is_admin()
-returns boolean
-language sql
-security definer
-stable
-set search_path = public
-as $$
-  select exists (select 1 from public.admins where user_id = auth.uid());
-$$;
-
--- ----------------------------------------------------------------------------
--- INBOX — moderation queue (viewer submissions, pending/approved/rejected)
--- ----------------------------------------------------------------------------
-create table if not exists public.inbox (
-  id           uuid primary key default gen_random_uuid(),
-  message      text not null check (char_length(message) > 0 and char_length(message) <= 200),
-  user_name    text not null check (char_length(user_name) > 0 and char_length(user_name) <= 32),
-  display_name text not null check (char_length(display_name) > 0 and char_length(display_name) <= 32),
-  sms_type     text not null check (sms_type in ('normal','vip','glamour','express')),
-  source       text not null default 'viewer' check (source = 'viewer'),
-  sender_role  text not null default 'viewer' check (sender_role = 'viewer'),
-  ts           bigint not null,                 -- Date.now() in ms, same as before
-  approved     boolean not null default false,
-  status       text not null default 'pending' check (status in ('pending','approved','rejected')),
-  approved_at  bigint,
-  rejected_at  bigint,
-  created_at   timestamptz not null default now()
-);
-
-alter table public.inbox enable row level security;
-
--- Anyone (anonymous viewer) may submit a new pending request — mirrors the
--- Firebase ".write" validation on "inbox/$msgId" for non-admins.
-create policy "viewers can submit a pending request"
-  on public.inbox for insert
-  to anon, authenticated
-  with check (
-    approved = false
-    and status = 'pending'
-    and source = 'viewer'
-    and sender_role = 'viewer'
-  );
-
--- Only admins can list/read the queue, update it (approve/reject) or delete
--- from it — mirrors ".read"/".write" on the parent "inbox" node.
-create policy "admins can read inbox"
-  on public.inbox for select
-  to authenticated
-  using (public.is_admin());
-
-create policy "admins can update inbox"
-  on public.inbox for update
-  to authenticated
-  using (public.is_admin())
-  with check (public.is_admin());
-
-create policy "admins can delete inbox"
-  on public.inbox for delete
-  to authenticated
-  using (public.is_admin());
-
--- Status lookup for a single submitted request, without exposing the whole
--- queue to anonymous callers — mirrors Firebase's per-child ".read": true
--- while the parent "inbox" list stayed admin-only.
-create or replace function public.get_inbox_status(request_id uuid)
-returns table (id uuid, status text, approved boolean)
-language sql
-security definer
-stable
-set search_path = public
-as $$
-  select id, status, approved from public.inbox where id = request_id;
-$$;
-
-grant execute on function public.get_inbox_status(uuid) to anon, authenticated;
-
--- ----------------------------------------------------------------------------
--- MESSAGES — public on-air feed (what chat.html / the OBS widget displays)
--- ----------------------------------------------------------------------------
 create table if not exists public.messages (
-  id           uuid primary key default gen_random_uuid(),
-  message      text not null check (char_length(message) > 0 and char_length(message) <= 200),
-  user_name    text check (user_name is null or char_length(user_name) <= 32),
-  display_name text check (display_name is null or char_length(display_name) <= 32),
-  sms_type     text not null check (sms_type in ('normal','vip','glamour','express')),
-  source       text check (source is null or source in ('viewer','moderator')),
-  sender_role  text check (sender_role is null or sender_role in ('viewer','moderator')),
-  ts           bigint not null,                 -- Date.now() in ms, same as before
-  inbox_id     uuid references public.inbox(id) on delete set null,
-  repeated     boolean not null default false,
-  created_at   timestamptz not null default now()
+  id bigint generated by default as identity primary key,
+  message text not null check (char_length(btrim(message)) between 1 and 120),
+  "user" text not null check (char_length(btrim("user")) between 1 and 32),
+  display_name text not null default '',
+  sms_type text not null default 'normal'
+    check (sms_type in ('normal','vip','glamour','express')),
+  source text not null default 'moderator',
+  sender_role text not null default 'moderator',
+  ts bigint not null default ((extract(epoch from now()) * 1000)::bigint),
+  inbox_id bigint,
+  repeated boolean not null default false
 );
+
+create table if not exists public.inbox (
+  id bigint generated by default as identity primary key,
+  message text not null check (char_length(btrim(message)) between 1 and 120),
+  "user" text not null check (char_length(btrim("user")) between 1 and 32),
+  display_name text not null default '',
+  sms_type text not null default 'normal'
+    check (sms_type in ('normal','vip','glamour','express')),
+  status text not null default 'pending'
+    check (status in ('pending','approved','rejected')),
+  ts bigint not null default ((extract(epoch from now()) * 1000)::bigint),
+  approved_at timestamptz,
+  rejected_at timestamptz
+);
+
+create table if not exists public.admin_users (
+  user_id uuid primary key references auth.users(id) on delete cascade
+);
+
+-- RTV administrators for the current Supabase project
+insert into public.admin_users (user_id)
+values
+  ('560d654c-8128-4167-8091-ed7254f7347d'::uuid),
+  ('60f00afe-c7e0-4ca0-b67c-f2a454df5dc6'::uuid)
+on conflict (user_id) do nothing;
 
 alter table public.messages enable row level security;
+alter table public.inbox enable row level security;
+alter table public.admin_users enable row level security;
 
--- Public on-air feed: anyone can read — mirrors "messages": { ".read": true }.
-create policy "messages are publicly readable"
-  on public.messages for select
-  to anon, authenticated
-  using (true);
+revoke all on public.messages, public.inbox, public.admin_users from anon, authenticated;
+grant select on public.messages to anon, authenticated;
+grant insert (message, "user", display_name, sms_type) on public.inbox to anon;
+grant select, update, delete on public.inbox to authenticated;
+grant insert, update, delete on public.messages to authenticated;
 
--- Only admins (moderators) may push to or clear the on-air feed — mirrors
--- "messages": { ".write": "auth != null && ...admins... }.
-create policy "only admins can insert messages"
-  on public.messages for insert
-  to authenticated
-  with check (public.is_admin());
+grant usage, select on sequence public.inbox_id_seq to anon, authenticated;
+grant usage, select on sequence public.messages_id_seq to authenticated;
 
-create policy "only admins can delete messages"
-  on public.messages for delete
-  to authenticated
-  using (public.is_admin());
+create schema if not exists private;
+revoke all on schema private from public;
+grant usage on schema private to authenticated;
 
--- Helpful indexes for the admin log/inbox views and the public feed.
-create index if not exists messages_ts_idx on public.messages (ts desc);
-create index if not exists inbox_status_ts_idx on public.inbox (status, ts desc);
+create or replace function private.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1 from public.admin_users
+    where user_id = (select auth.uid())
+  );
+$$;
 
--- ----------------------------------------------------------------------------
--- REALTIME
--- Enable Postgres Changes so the admin panel (authenticated) and the public
--- feed (anonymous, messages table only — RLS still applies to each
--- subscriber) get live updates like the old db.ref(...).on('value') calls.
--- ----------------------------------------------------------------------------
-alter publication supabase_realtime add table public.messages;
-alter publication supabase_realtime add table public.inbox;
+revoke all on function private.is_admin() from public, anon;
+grant execute on function private.is_admin() to authenticated;
 
--- ----------------------------------------------------------------------------
--- Making yourself an admin (do this AFTER creating your user in
--- Authentication -> Users, e.g. with email+password matching the old
--- Firebase admin accounts):
---
---   insert into public.admins (user_id)
---   values ('paste-the-user-uuid-from-the-auth-users-table-here');
--- ----------------------------------------------------------------------------
+drop policy if exists "RTV public read messages" on public.messages;
+create policy "RTV public read messages"
+on public.messages for select to anon, authenticated
+using (true);
+
+drop policy if exists "RTV visitors submit inbox" on public.inbox;
+create policy "RTV visitors submit inbox"
+on public.inbox for insert to anon
+with check (
+  status = 'pending'
+  and approved_at is null
+  and rejected_at is null
+  and char_length(btrim(message)) between 1 and 120
+  and char_length(btrim("user")) between 1 and 32
+  and sms_type in ('normal','vip','glamour','express')
+);
+
+drop policy if exists "RTV admins read inbox" on public.inbox;
+create policy "RTV admins read inbox"
+on public.inbox for select to authenticated
+using ((select private.is_admin()));
+
+drop policy if exists "RTV admins moderate inbox" on public.inbox;
+create policy "RTV admins moderate inbox"
+on public.inbox for update to authenticated
+using ((select private.is_admin()))
+with check ((select private.is_admin()));
+
+drop policy if exists "RTV admins delete inbox" on public.inbox;
+create policy "RTV admins delete inbox"
+on public.inbox for delete to authenticated
+using ((select private.is_admin()));
+
+drop policy if exists "RTV admins publish messages" on public.messages;
+create policy "RTV admins publish messages"
+on public.messages for insert to authenticated
+with check ((select private.is_admin()));
+
+drop policy if exists "RTV admins update messages" on public.messages;
+create policy "RTV admins update messages"
+on public.messages for update to authenticated
+using ((select private.is_admin()))
+with check ((select private.is_admin()));
+
+drop policy if exists "RTV admins delete messages" on public.messages;
+create policy "RTV admins delete messages"
+on public.messages for delete to authenticated
+using ((select private.is_admin()));
+
+do $$
+begin
+  alter publication supabase_realtime add table public.messages;
+exception when duplicate_object then null;
+end $$;
+
+do $$
+begin
+  alter publication supabase_realtime add table public.inbox;
+exception when duplicate_object then null;
+end $$;
