@@ -28,7 +28,7 @@
   function queueMessage(message, kind) {
     const el = $("queueStatus");
     el.textContent = message || "";
-    el.className = "tr-alert" + (kind ? " " + kind : "");
+    el.className = "tr-status" + (kind ? " " + kind : "");
   }
 
   function loginError(message) {
@@ -86,12 +86,12 @@
     const card = makeElement("article", "tr-request-card status-" + row.status);
     const top = makeElement("div", "tr-request-top");
     const titleGroup = makeElement("div", "tr-request-title");
-    titleGroup.appendChild(makeElement("span", "tr-channel", row.channel === "btv" ? "BTV" : "RTV"));
+    titleGroup.appendChild(makeElement("span", "tag", row.channel === "btv" ? "BTV" : "RTV"));
     titleGroup.appendChild(makeElement("h3", "", row.artist || "—"));
     titleGroup.appendChild(makeElement("p", "tr-track-title", row.track_title || "Название трека не указано"));
     top.appendChild(titleGroup);
-    top.appendChild(makeElement("span", "tr-status-badge " + row.status, statusTitle(row.status)));
     card.appendChild(top);
+    card.appendChild(makeElement("span", "status-pill status-" + row.status, statusTitle(row.status)));
 
     const meta = makeElement("div", "tr-meta");
     const created = row.created_at ? new Date(row.created_at).toLocaleString("ru-RU") : "—";
@@ -133,10 +133,10 @@
 
     if (row.status === "pending") {
       const actions = makeElement("div", "tr-card-actions");
-      const approve = makeElement("button", "tr-button primary", "Одобрить");
+      const approve = makeElement("button", "btn-approve", "▶ Одобрить");
       approve.type = "button";
       approve.addEventListener("click", () => reviewRequest(row, "approved", approve));
-      const reject = makeElement("button", "tr-button danger", "Отклонить");
+      const reject = makeElement("button", "btn-reject", "Отклонить");
       reject.type = "button";
       reject.addEventListener("click", () => reviewRequest(row, "rejected", reject));
       actions.append(approve, reject);
@@ -158,9 +158,13 @@
     $("countPending").textContent = String(allRequests.filter((r) => r.status === "pending").length);
     $("countApproved").textContent = String(allRequests.filter((r) => r.status === "approved").length);
     $("countRejected").textContent = String(allRequests.filter((r) => r.status === "rejected").length);
+    const badge = $("badgeQueue");
+    const pend = allRequests.filter((r) => r.status === "pending").length;
+    badge.textContent = String(pend);
+    badge.classList.toggle("visible", pend > 0);
     requestList.replaceChildren();
     if (!visible.length) {
-      requestList.appendChild(makeElement("div", "tr-empty", "Заявок в этой выборке нет."));
+      requestList.appendChild(makeElement("div", "empty-state", "Заявок в этой выборке нет."));
       return;
     }
     visible.forEach((row) => requestList.appendChild(renderCard(row)));
@@ -175,11 +179,13 @@
       const result = await apiRequest("/api/admin/requests?channel=" + encodeURIComponent(channel) + "&status=all&limit=500");
       allRequests = Array.isArray(result.requests) ? result.requests : [];
       render();
-      queueMessage("Подключено. Очередь автоматически обновляется каждые 20 секунд.", "success");
+      queueMessage("Очередь обновляется автоматически каждые 20 секунд.", "success");
+      $("connDot").classList.remove("off"); $("connLabel").textContent = "подключено";
     } catch (error) {
       allRequests = [];
       render();
       queueMessage("Не удалось загрузить очередь: " + error.message, "error");
+      $("connDot").classList.add("off"); $("connLabel").textContent = "нет соединения";
     } finally {
       loading = false;
     }
@@ -220,7 +226,8 @@
       pollTimer = null;
       return;
     }
-    $("authInfo").textContent = "Вошли как " + (currentUser.email || currentUser.id) + " · " + (cfg.channelLabel || cfg.channel || "");
+    $("authEmail").textContent = currentUser.email || currentUser.id;
+    $("authInfo").textContent = cfg.channelLabel || cfg.channel || "";
     if (!$("channelFilter").dataset.initialized) {
       $("channelFilter").value = cfg.channel === "rtv" ? "rtv" : "btv";
       $("channelFilter").dataset.initialized = "true";
@@ -254,11 +261,21 @@
     await showSession(null);
   });
   $("refreshButton").addEventListener("click", () => { void loadRequests(); });
-  ["channelFilter", "statusFilter"].forEach((id) => $(id).addEventListener("change", () => { void loadRequests(); }));
+  ["channelFilter"].forEach((id) => $(id).addEventListener("change", () => { void loadRequests(); }));
   $("searchRequests").addEventListener("input", render);
+  document.querySelectorAll("[data-st]").forEach((pill) => pill.addEventListener("click", () => {
+    document.querySelectorAll("[data-st]").forEach((p) => p.classList.toggle("active", p === pill));
+    $("statusFilter").value = pill.dataset.st;
+    render();
+  }));
+  $("togglePass").addEventListener("click", () => {
+    const f = $("loginPassword");
+    f.type = f.type === "password" ? "text" : "password";
+  });
 
   if (!configured() || !window.supabase || !window.supabase.createClient) {
     configWarning.hidden = false;
+    loginError("Не настроен API / Auth: проверь track-order-config.js и доступ к supabase-js.");
     $("loginButton").disabled = true;
   } else {
     authClient = window.supabase.createClient(cfg.authSupabaseUrl, cfg.authPublishableKey, {

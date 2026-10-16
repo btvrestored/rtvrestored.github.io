@@ -1,86 +1,128 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090909">
-  <title>Модерация музыкальных заявок</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1a0d08">
+  <title>Заявки на треки — Админ-панель</title>
+  <link rel="stylesheet" href="admin.css">
   <link rel="stylesheet" href="track-requests.css">
 </head>
 <body>
-  <header class="tr-topbar">
-    <div>
-      <div class="tr-eyebrow">PROJECT RESTORED</div>
-      <h1>Музыкальные заявки</h1>
-      <p>Отдельная очередь заявок BTV / RTV</p>
-    </div>
-    <div class="tr-top-actions">
-      <a href="index.html" class="tr-button">← В основную админку</a>
-      <button id="logoutButton" class="tr-button secondary" type="button" hidden>Выйти</button>
-    </div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol><symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></symbol><symbol id="i-log" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol><symbol id="i-form" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M7 9h10M7 13h6"/></symbol><symbol id="i-tv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="1"/><path d="M8 22h8"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol><symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></symbol></defs></svg>
+
+<div class="shell" id="dashboard" hidden>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <span class="topbar-sep"></span>
+    <span class="status-dot" id="connDot"></span>
+    <span class="status-label" id="connLabel">подключение…</span>
+    <span id="authEmail"></span>
+    <button class="logout" id="logoutButton" type="button">Выйти</button>
   </header>
 
-  <main class="tr-main">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <img class="side-logo" src="img/logo.png" alt="BRIDGE TV">
+    <div class="nav-section">Панель</div>
+    <a class="nav-item" href="index.html#send">
+      <svg class="ico"><use href="#i-send"/></svg> Отправить SMS
+    </a>
+    <a class="nav-item" href="index.html#inbox">
+      <svg class="ico"><use href="#i-inbox"/></svg> Входящие
+    </a>
+    <a class="nav-item" href="index.html#log">
+      <svg class="ico"><use href="#i-log"/></svg> Лог сообщений
+    </a>
+
+    <div class="nav-section" style="margin-top:16px;">Инструменты</div>
+    <a class="nav-item" href="receive.html" target="_blank">
+      <svg class="ico"><use href="#i-form"/></svg> Форма отправки
+    </a>
+    <a class="nav-item" href="chat.html" target="_blank">
+      <svg class="ico"><use href="#i-tv"/></svg> Виджет (OBS)
+    </a>
+    <a class="nav-item active" href="track-requests.html">
+      <svg class="ico"><use href="#i-form"/></svg> Заявки на треки
+      <span class="nav-badge" id="badgeQueue">0</span>
+    </a>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+    <div>
+      <div class="page-title">Заявки на треки</div>
+      <div class="page-subtitle">Очередь музыкальных заявок BTV / RTV — одобряйте и отклоняйте перед эфиром <span id="authInfo"></span></div>
+    </div>
+
     <section id="configWarning" class="tr-alert warning" hidden>
       Настрой API URL и public Auth key в track-order-config.js для этого сайта. Database password и secret/service-role key сюда не вставляй.
     </section>
 
-    <section id="loginPanel" class="tr-card tr-login">
-      <h2>Вход модератора</h2>
-      <p>Используется существующая учётная запись Supabase Auth соответствующего канала. Регистрация на этой странице отключена.</p>
-      <form id="loginForm" class="tr-form">
-        <label for="loginEmail">Email</label>
-        <input id="loginEmail" type="email" autocomplete="username" required>
-        <label for="loginPassword">Пароль</label>
-        <input id="loginPassword" type="password" autocomplete="current-password" required>
-        <button id="loginButton" class="tr-button primary" type="submit">Войти</button>
-        <div id="loginError" class="tr-alert error" role="alert" hidden></div>
-      </form>
-    </section>
+    <!-- STATS -->
+    <div class="stats-row tr-stats">
+      <div class="stat-card tr-stat-pending"><div class="stat-val" id="countPending">—</div><div class="stat-label">ожидают</div></div>
+      <div class="stat-card tr-stat-approved"><div class="stat-val" id="countApproved">—</div><div class="stat-label">одобрены</div></div>
+      <div class="stat-card tr-stat-rejected"><div class="stat-val" id="countRejected">—</div><div class="stat-label">отклонены</div></div>
+    </div>
 
-    <section id="dashboard" hidden>
-      <div class="tr-toolbar">
-        <div>
-          <div class="tr-eyebrow">MODERATION QUEUE</div>
-          <h2>Очередь заявок</h2>
-          <p id="authInfo" class="tr-muted"></p>
+    <div class="card">
+      <div class="tools-row">
+        <button class="filter-pill active" data-st="pending" type="button">Ожидают</button>
+        <button class="filter-pill" data-st="approved" type="button">Одобрены</button>
+        <button class="filter-pill danger" data-st="rejected" type="button">Отклонены</button>
+        <button class="filter-pill" data-st="all" type="button">Все</button>
+        <select id="statusFilter" class="tr-hidden-select" aria-label="Статус">
+          <option value="pending">Ожидают</option>
+          <option value="approved">Одобрены</option>
+          <option value="rejected">Отклонены</option>
+          <option value="all">Все</option>
+        </select>
+        <div class="tool-sep"></div>
+        <select id="channelFilter" class="tr-channel-select" aria-label="Канал">
+          <option value="all">Все каналы</option>
+          <option value="btv">BTV</option>
+          <option value="rtv">RTV</option>
+        </select>
+        <div class="search-wrap">
+          <svg class="search-ico"><use href="#i-search"/></svg>
+          <input id="searchRequests" type="search" placeholder="Исполнитель / трек">
         </div>
-        <div class="tr-filters">
-          <label>Канал
-            <select id="channelFilter">
-              <option value="all">Все доступные</option>
-              <option value="btv">BTV</option>
-              <option value="rtv">RTV</option>
-            </select>
-          </label>
-          <label>Статус
-            <select id="statusFilter">
-              <option value="pending">Ожидают</option>
-              <option value="approved">Одобрены</option>
-              <option value="rejected">Отклонены</option>
-              <option value="all">Все</option>
-            </select>
-          </label>
-          <label>Поиск
-            <input id="searchRequests" type="search" placeholder="Исполнитель / трек">
-          </label>
-          <button id="refreshButton" class="tr-button secondary" type="button">Обновить</button>
-        </div>
+        <button id="refreshButton" class="filter-pill" type="button">↻ Обновить</button>
       </div>
-
-      <div class="tr-stats">
-        <div class="tr-stat"><span id="countPending">—</span><small>ожидают</small></div>
-        <div class="tr-stat"><span id="countApproved">—</span><small>одобрены</small></div>
-        <div class="tr-stat"><span id="countRejected">—</span><small>отклонены</small></div>
-      </div>
-
-      <div id="queueStatus" class="tr-alert" role="status" aria-live="polite"></div>
+      <div id="queueStatus" class="tr-status" role="status" aria-live="polite"></div>
       <div id="requestList" class="tr-request-list"></div>
-    </section>
+    </div>
   </main>
+</div>
 
-  <script src="../track-order-config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="track-requests.js" defer></script>
+<!-- LOGIN -->
+<div id="loginPanel" class="login-screen">
+  <main class="login">
+    <img class="login-logo" src="img/logo.png" alt="BRIDGE TV">
+    <form class="login-panel" id="loginForm">
+      <h1>Заявки на треки</h1>
+      <p class="tr-login-hint">Используется учётная запись Supabase Auth канала. Регистрация отключена.</p>
+      <div class="form-group"><label for="loginEmail">E-mail</label><input id="loginEmail" type="email" autocomplete="username" required></div>
+      <div class="form-group"><label for="loginPassword">Пароль</label>
+        <div class="input-wrap"><input id="loginPassword" type="password" autocomplete="current-password" required>
+          <button type="button" class="eye" id="togglePass" aria-label="Показать пароль"><svg class="ico"><use href="#i-eye"/></svg></button></div></div>
+      <div class="login-actions"><div id="loginError" role="alert" hidden></div><button type="submit" id="loginButton">Войти</button></div>
+    </form>
+  </main>
+</div>
+
+<!-- Нижнее меню для телефона -->
+<nav class="tabbar">
+  <a class="nav-item" href="index.html#send"><svg class="ico"><use href="#i-send"/></svg>Отправить</a>
+  <a class="nav-item" href="index.html#inbox"><svg class="ico"><use href="#i-inbox"/></svg>Входящие</a>
+  <a class="nav-item" href="index.html#log"><svg class="ico"><use href="#i-log"/></svg>Лог</a>
+  <a class="nav-item active" href="track-requests.html"><svg class="ico"><use href="#i-form"/></svg>Заявки</a>
+</nav>
+
+<script src="../track-order-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="track-requests.js" defer></script>
 </body>
 </html>
