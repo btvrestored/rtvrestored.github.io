@@ -107,7 +107,7 @@
   }
 
   async function callFunction(name, payload) {
-    const root = config.apiBaseUrl.replace(/\\/+$/, "");
+    const root = config.apiBaseUrl.replace(/\/+$/, "");
     const routes = {
       "track-catalog-search": "/api/catalog/search",
       "track-request-submit": "/api/requests"
