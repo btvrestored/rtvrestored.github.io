@@ -177,6 +177,8 @@
       render();
       queueMessage("Подключено. Очередь автоматически обновляется каждые 20 секунд.", "success");
     } catch (error) {
+      allRequests = [];
+      render();
       queueMessage("Не удалось загрузить очередь: " + error.message, "error");
     } finally {
       loading = false;
