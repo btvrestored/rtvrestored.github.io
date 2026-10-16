@@ -37,7 +37,7 @@
   function safeUrl(raw) {
     try {
       const u = new URL(String(raw || ""));
-      const host = u.hostname.toLowerCase();
+      const host = u.hostname.toLowerCase().replace(/^www\./, "");
       const validHost = host === "youtube.com" || host === "www.youtube.com" ||
         host === "youtu.be" || host === "m.youtube.com" || host === "music.youtube.com" ||
         host === "vk.com" || host === "m.vk.com" || host === "vkvideo.ru" ||
