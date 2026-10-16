@@ -275,6 +275,7 @@
 
   if (!configured() || !window.supabase || !window.supabase.createClient) {
     configWarning.hidden = false;
+    loginPanel.hidden = false;
     loginError("Не настроен API / Auth: проверь track-order-config.js и доступ к supabase-js.");
     $("loginButton").disabled = true;
   } else {
@@ -282,7 +283,13 @@
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
     authClient.auth.onAuthStateChange((_event, session) => {
-      setTimeout(() => { void showSession(session); }, 0);
+      setTimeout(() => {
+        if (session) { void showSession(session); return; }
+        /* пустая сессия: повторно проверяем, чтобы не мигать окном входа при переходах */
+        setTimeout(() => {
+          authClient.auth.getSession().then(({ data }) => { void showSession(data.session); });
+        }, 400);
+      }, 0);
     });
     authClient.auth.getSession().then(({ data }) => { void showSession(data.session); });
   }

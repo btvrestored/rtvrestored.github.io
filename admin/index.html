@@ -24,7 +24,7 @@
 
   <!-- SIDEBAR -->
   <nav class="sidebar">
-    <img class="side-logo" src="img/logo.png" alt="BRIDGE TV">
+    <img class="side-logo" src="img/logo.png" alt="RUSONG TV">
     <div class="nav-section">Панель</div>
     <a class="nav-item active" onclick="showPage('send')" href="#send">
       <svg class="ico"><use href="#i-send"/></svg> Отправить SMS
@@ -98,7 +98,7 @@
               <div class="quick-templates">
                 <button class="template-btn" onclick="applyTemplate('Следующий клип уже готовится к эфиру.')">Следующий клип</button>
                 <button class="template-btn" onclick="applyTemplate('Спасибо за ваши сообщения, читаем всё в эфире.')">Спасибо зрителям</button>
-                <button class="template-btn" onclick="applyTemplate('Оставайтесь с BRIDGE TV Project Restored.')">Оставайтесь с нами</button>
+                <button class="template-btn" onclick="applyTemplate('Оставайтесь с RUSONG TV: Project Restored.')">Оставайтесь с нами</button>
                 <button class="template-btn" onclick="applyTemplate('Заказать клип можно через @bmprorder_bot.')">Заказать клип</button>
               </div>
             </div>
@@ -227,9 +227,9 @@
 
 
 <!-- LOGIN -->
-<div id="loginOverlay" class="login-screen">
+<div id="loginOverlay" class="login-screen" style="display:none;">
   <main class="login">
-    <img class="login-logo" src="img/logo.png" alt="BRIDGE TV">
+    <img class="login-logo" src="img/logo.png" alt="RUSONG TV">
     <form class="login-panel" onsubmit="event.preventDefault(); doLogin();">
       <h1>Вход в админ-панель</h1>
       <div class="form-group"><label for="loginEmail">E-mail</label><input id="loginEmail" type="email" autocomplete="username"></div>
@@ -252,6 +252,7 @@
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
 <script src="supabase-client.js"></script>
 
 <script>
@@ -264,15 +265,24 @@
   let inboxFilter  = 'pending';
 
   /* ── Auth gate ── */
+  let authLoginTimer;
+  function showLogin() {
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('shell').style.display = 'none';
+  }
   btv.onAuthChange(user => {
+    clearTimeout(authLoginTimer);
     if (user) {
       document.getElementById('loginOverlay').style.display = 'none';
       document.getElementById('shell').style.display = 'grid';
       document.getElementById('authEmail').textContent = user.email;
       startListeners();
     } else {
-      document.getElementById('loginOverlay').style.display = 'flex';
-      document.getElementById('shell').style.display = 'none';
+      /* окно входа показываем только если сессии нет и после повторной проверки
+         (при переходе между страницами админки сессия может прийти с задержкой) */
+      authLoginTimer = setTimeout(() => {
+        sb.auth.getSession().then(({ data }) => { if (!data.session) showLogin(); }).catch(showLogin);
+      }, 400);
     }
   });
 
