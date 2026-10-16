@@ -1,4 +1,4 @@
-import { consumeRateLimit, json, options, originAllowed, serverClient, sha256Hex } from "../_shared/common.ts";
+import { consumeRateLimit, json, options, originAllowed, channelMatchesOrigin, serverClient, sha256Hex } from "../_shared/common.ts";
 
 function phrase(value: string): string {
   return '"' + value.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
@@ -97,6 +97,7 @@ Deno.serve(async (req: Request) => {
     const artist = safeText(body.artist, 160);
     const title = safeText(body.trackTitle, 180);
     if (!channel || artist.length < 1) return json(req, { ok: false, error: "Укажите канал и исполнителя." }, 400);
+    if (!channelMatchesOrigin(req, channel)) return json(req, { ok: false, error: "Этот сайт не может искать в очереди другого канала." }, 403);
     if (provider === "discogs" && !Deno.env.get("DISCOGS_TOKEN")) {
       return json(req, { ok: false, error: "Discogs пока не настроен. Выберите MusicBrainz." }, 503);
     }
