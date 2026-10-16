@@ -98,7 +98,7 @@
           /^\/(shorts|embed|live)\/[^/]+/.test(u.pathname);
       }
       if (["vk.com", "m.vk.com", "vkvideo.ru"].includes(host)) {
-        return /^\/(video|clip|video_ext\.php)(\/|$)/.test(u.pathname);
+        return /^\/(video[^/]*|clip[^/]*|video_ext\.php)(\/|$)/.test(u.pathname);
       }
       return false;
     } catch (_) {
