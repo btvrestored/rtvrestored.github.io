@@ -22,12 +22,12 @@
 
   <main class="tr-main">
     <section id="configWarning" class="tr-alert warning" hidden>
-      Укажи URL проекта и publishable key в track-order-config.js для этого сайта. Secret/service-role key сюда не вставляй.
+      Настрой API URL и public Auth key в track-order-config.js для этого сайта. Database password и secret/service-role key сюда не вставляй.
     </section>
 
     <section id="loginPanel" class="tr-card tr-login">
       <h2>Вход модератора</h2>
-      <p>Используется аккаунт Auth отдельного Supabase-проекта заявок. Регистрация на этой странице отключена.</p>
+      <p>Используется существующая учётная запись Supabase Auth соответствующего канала. Регистрация на этой странице отключена.</p>
       <form id="loginForm" class="tr-form">
         <label for="loginEmail">Email</label>
         <input id="loginEmail" type="email" autocomplete="username" required>
