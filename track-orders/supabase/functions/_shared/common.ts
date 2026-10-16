@@ -21,6 +21,21 @@ export function originAllowed(req: Request): boolean {
   }
 }
 
+export function channelMatchesOrigin(req: Request, channel: string): boolean {
+  const origin = req.headers.get("origin");
+  if (!origin) return true;
+  try {
+    const u = new URL(origin);
+    const host = u.hostname.toLowerCase().replace(/^www\./, "");
+    if (host === "localhost" || host === "127.0.0.1") return true;
+    if (host === "btvrestored.ru") return channel === "btv";
+    if (host === "rtvrestored.ru") return channel === "rtv";
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 function corsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("origin") || "";
   const permitted = originAllowed(req);
