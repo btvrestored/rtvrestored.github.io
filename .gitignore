@@ -1,7 +1,9 @@
+# Local environment secrets
 .env
 .env.*
 !.env.example
 
+# OS/editor files
 .DS_Store
 Thumbs.db
 .vscode/
