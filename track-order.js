@@ -82,12 +82,9 @@
   }
 
   function configured() {
-    return typeof config.supabaseUrl === "string" &&
-      config.supabaseUrl.startsWith("https://") &&
-      !config.supabaseUrl.includes("YOUR-TRACK-ORDERS") &&
-      typeof config.publishableKey === "string" &&
-      config.publishableKey.startsWith("sb_publishable_") &&
-      !config.publishableKey.includes("REPLACE_ME");
+    return typeof config.apiBaseUrl === "string" &&
+      config.apiBaseUrl.startsWith("https://") &&
+      !config.apiBaseUrl.includes("YOUR-DENO-APP");
   }
 
   function validClipUrl(value) {
@@ -110,14 +107,16 @@
   }
 
   async function callFunction(name, payload) {
-    const root = config.supabaseUrl.replace(/\/+$/, "");
-    const response = await fetch(root + "/functions/v1/" + name, {
+    const root = config.apiBaseUrl.replace(/\\/+$/, "");
+    const routes = {
+      "track-catalog-search": "/api/catalog/search",
+      "track-request-submit": "/api/requests"
+    };
+    const route = routes[name];
+    if (!route) throw new Error("Unknown API route.");
+    const response = await fetch(root + route, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": config.publishableKey,
-        "Authorization": "Bearer " + config.publishableKey
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
     const data = await response.json().catch(() => ({}));
