@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090909">
+  <title>Модерация музыкальных заявок</title>
+  <link rel="stylesheet" href="track-requests.css">
+</head>
+<body>
+  <header class="tr-topbar">
+    <div>
+      <div class="tr-eyebrow">PROJECT RESTORED</div>
+      <h1>Музыкальные заявки</h1>
+      <p>Отдельная очередь заявок BTV / RTV</p>
+    </div>
+    <div class="tr-top-actions">
+      <a href="index.html" class="tr-button">← В основную админку</a>
+      <button id="logoutButton" class="tr-button secondary" type="button" hidden>Выйти</button>
+    </div>
+  </header>
+
+  <main class="tr-main">
+    <section id="configWarning" class="tr-alert warning" hidden>
+      Укажи URL проекта и publishable key в track-order-config.js для этого сайта. Secret/service-role key сюда не вставляй.
+    </section>
+
+    <section id="loginPanel" class="tr-card tr-login">
+      <h2>Вход модератора</h2>
+      <p>Используется аккаунт Auth отдельного Supabase-проекта заявок. Регистрация на этой странице отключена.</p>
+      <form id="loginForm" class="tr-form">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" autocomplete="username" required>
+        <label for="loginPassword">Пароль</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" required>
+        <button id="loginButton" class="tr-button primary" type="submit">Войти</button>
+        <div id="loginError" class="tr-alert error" role="alert" hidden></div>
+      </form>
+    </section>
+
+    <section id="dashboard" hidden>
+      <div class="tr-toolbar">
+        <div>
+          <div class="tr-eyebrow">MODERATION QUEUE</div>
+          <h2>Очередь заявок</h2>
+          <p id="authInfo" class="tr-muted"></p>
+        </div>
+        <div class="tr-filters">
+          <label>Канал
+            <select id="channelFilter">
+              <option value="all">Все доступные</option>
+              <option value="btv">BTV</option>
+              <option value="rtv">RTV</option>
+            </select>
+          </label>
+          <label>Статус
+            <select id="statusFilter">
+              <option value="pending">Ожидают</option>
+              <option value="approved">Одобрены</option>
+              <option value="rejected">Отклонены</option>
+              <option value="all">Все</option>
+            </select>
+          </label>
+          <label>Поиск
+            <input id="searchRequests" type="search" placeholder="Исполнитель / трек">
+          </label>
+          <button id="refreshButton" class="tr-button secondary" type="button">Обновить</button>
+        </div>
+      </div>
+
+      <div class="tr-stats">
+        <div class="tr-stat"><span id="countPending">—</span><small>ожидают</small></div>
+        <div class="tr-stat"><span id="countApproved">—</span><small>одобрены</small></div>
+        <div class="tr-stat"><span id="countRejected">—</span><small>отклонены</small></div>
+      </div>
+
+      <div id="queueStatus" class="tr-alert" role="status" aria-live="polite"></div>
+      <div id="requestList" class="tr-request-list"></div>
+    </section>
+  </main>
+
+  <script src="../track-order-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="track-requests.js" defer></script>
+</body>
+</html>
