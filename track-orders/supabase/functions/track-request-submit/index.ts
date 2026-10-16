@@ -1,4 +1,4 @@
-import { consumeRateLimit, clipProvider, cleanCatalog, json, options, originAllowed, serverClient } from "../_shared/common.ts";
+import { consumeRateLimit, clipProvider, cleanCatalog, json, options, originAllowed, channelMatchesOrigin, serverClient } from "../_shared/common.ts";
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return options(req);
@@ -16,6 +16,7 @@ Deno.serve(async (req: Request) => {
 
     if (honeypot) return json(req, { ok: true, status: "pending" });
     if (!channel) return json(req, { ok: false, error: "Не указан канал." }, 400);
+    if (!channelMatchesOrigin(req, channel)) return json(req, { ok: false, error: "Этот сайт не может отправить заявку в очередь другого канала." }, 403);
     if (artist.length < 1 || artist.length > 160) {
       return json(req, { ok: false, error: "Исполнитель обязателен (до 160 символов)." }, 400);
     }
