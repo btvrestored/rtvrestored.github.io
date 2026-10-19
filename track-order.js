@@ -116,7 +116,10 @@
     if (!route) throw new Error("Unknown API route.");
     const response = await fetch(root + route, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": config.authPublishableKey
+      },
       body: JSON.stringify(payload)
     });
     const data = await response.json().catch(() => ({}));
