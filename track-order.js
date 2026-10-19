@@ -171,21 +171,34 @@
     };
     const route = routes[name];
     if (!route) throw new Error("Unknown API route.");
-    const response = await fetch(root + route, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": config.authPublishableKey
-      },
-      body: JSON.stringify(payload)
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || data.ok === false) {
-      const error = new Error(data.error || tr("genericError"));
-      error.status = response.status;
-      throw error;
+    let attempt = 0;
+    while (true) {
+      const response = await fetch(root + route, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": config.authPublishableKey
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      const retryBusyCatalog = name === "track-catalog-search" &&
+        response.status === 429 &&
+        typeof data.error === "string" &&
+        data.error.includes("Каталог занят") &&
+        attempt === 0;
+      if (retryBusyCatalog) {
+        attempt += 1;
+        await new Promise((resolve) => setTimeout(resolve, 1300));
+        continue;
+      }
+      if (!response.ok || data.ok === false) {
+        const error = new Error(data.error || tr("genericError"));
+        error.status = response.status;
+        throw error;
+      }
+      return data;
     }
-    return data;
   }
 
   function clearCatalogResults() {
