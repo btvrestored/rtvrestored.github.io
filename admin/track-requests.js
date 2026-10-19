@@ -45,6 +45,7 @@
     if (!accessToken) throw new Error("Сеанс входа истёк. Войди ещё раз.");
     const requestHeaders = new Headers(options.headers || {});
     requestHeaders.set("Authorization", "Bearer " + accessToken);
+    requestHeaders.set("apikey", cfg.authPublishableKey);
     requestHeaders.set("Accept", "application/json");
     if (options.body !== undefined) requestHeaders.set("Content-Type", "application/json");
     const url = cfg.apiBaseUrl.replace(/\/+$/, "") + path;
