@@ -1,0 +1,3 @@
+# Public submissions are allowed; this function validates origin and protects admin routes itself.
+[functions.track-orders-api]
+verify_jwt = false
