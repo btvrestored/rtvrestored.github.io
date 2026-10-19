@@ -1,4 +1,4 @@
-name: Check track order scripts
+name: Check track orders frontend and Edge Function
 
 on:
   push:
@@ -23,3 +23,9 @@ jobs:
         run: node --check track-order.js
       - name: Check moderation script
         run: node --check admin/track-requests.js
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Check Supabase Edge Function
+        run: deno check supabase/functions/track-orders-api/index.ts
