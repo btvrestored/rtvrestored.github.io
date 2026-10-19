@@ -1,0 +1,31 @@
+name: Check track orders frontend and Supabase Edge Function
+
+on:
+  push:
+    branches:
+      - feature/supabase-edge-track-orders-2026-10-19
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check public form script
+        run: node --check track-order.js
+      - name: Check moderation script
+        run: node --check admin/track-requests.js
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Check Edge Function
+        run: deno check supabase/functions/track-orders-api/index.ts
