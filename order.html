@@ -86,13 +86,9 @@
         </div>
         <input id="formStartedAt" name="formStartedAt" type="hidden" value="">
 
-        <div>
-          <div class="track-label" data-i18n="rulesTitle">Перед отправкой</div>
-          <ul class="track-rules">
-            <li data-i18n="rule1">Указывай реального исполнителя и проверяемую ссылку на клип.</li>
-            <li data-i18n="rule2">Не отправляй мемы, спам, случайные перезаливы или контент, не подходящий музыкальному формату канала.</li>
-            <li data-i18n="rule3">Даже совпадение в базе не гарантирует одобрения.</li>
-          </ul>
+        <div class="track-agree">
+          <input id="rulesAgree" name="rulesAgree" type="checkbox">
+          <label for="rulesAgree"><span data-i18n="agreePre">Я ознакомился с</span> <button type="button" class="rules-link" id="openRules" data-i18n="rulesLink">правилами приёма заявок</button> <span data-i18n="agreePost">и согласен с ними *</span></label>
         </div>
 
         <div class="track-actions">
@@ -103,6 +99,20 @@
       </form>
     </section>
   </main>
+
+  <div class="rules-modal" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="rulesModalTitle" hidden>
+    <div class="rules-box">
+      <div class="rules-head">
+        <h2 id="rulesModalTitle"></h2>
+        <button type="button" class="rules-x" id="rulesClose" aria-label="Закрыть">×</button>
+      </div>
+      <div class="rules-body" id="rulesBody" tabindex="0"></div>
+      <div class="rules-foot">
+        <button type="button" class="btn secondary" id="rulesDismiss" data-i18n="rulesCloseBtn">Закрыть</button>
+        <button type="button" class="btn primary" id="rulesAccept" data-i18n="rulesAcceptBtn">Ознакомился и согласен</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="site-footer" data-i18n="footer">Проект независим и не связан с BRIDGE MEDIA.</footer>
   <script src="track-order-config.js"></script>

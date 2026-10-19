@@ -24,7 +24,7 @@
       providerLabel: "Каталог", catalogSearch: "Найти совпадения", catalogSearchBusy: "Ищем…", selectMatch: "Выбрать",
       noResults: "Совпадений не найдено. Проверь написание — заявку всё равно рассмотрит модератор.",
       selected: "Выбран результат каталога. Модератор увидит его вместе с заявкой.",
-      rulesTitle: "Перед отправкой", rule1: "Указывай реального исполнителя и проверяемую ссылку на клип.", rule2: "Не отправляй мемы, спам, случайные перезаливы или контент, не подходящий музыкальному формату канала.", rule3: "Даже совпадение в базе не гарантирует одобрения.",
+      agreePre: "Я ознакомился с", rulesLink: "правилами приёма заявок", agreePost: "и согласен с ними *", rulesCloseBtn: "Закрыть", rulesAcceptBtn: "Ознакомился и согласен", errRules: "Подтвердите, что вы ознакомились с правилами приёма заявок.",
       submit: "Отправить на модерацию", submitBusy: "Отправляем…",
       privacy: "Контактные данные не запрашиваются. Заявка попадёт в закрытую очередь модерации.",
       footer: "Проект независим и не связан с BRIDGE MEDIA.",
@@ -44,7 +44,7 @@
       providerLabel: "Catalogue", catalogSearch: "Search catalogue", catalogSearchBusy: "Searching…", selectMatch: "Select",
       noResults: "No matches found. Check the spelling; a moderator can still review the request.",
       selected: "Catalogue match selected. The moderator will see it with your request.",
-      rulesTitle: "Before submitting", rule1: "Use a real artist name and a verifiable video link.", rule2: "Do not submit memes, spam, random re-uploads, or content outside the channel's music format.", rule3: "A catalogue match does not guarantee approval.",
+      agreePre: "I have read the", rulesLink: "submission rules", agreePost: "and agree to them *", rulesCloseBtn: "Close", rulesAcceptBtn: "I have read and agree", errRules: "Please confirm that you have read the submission rules.",
       submit: "Send for moderation", submitBusy: "Submitting…",
       privacy: "No contact details are requested. Your submission goes to a private moderation queue.",
       footer: "This independent project is not affiliated with BRIDGE MEDIA.",
@@ -73,8 +73,65 @@
       el.classList.toggle("active", el.getAttribute("data-lang") === lang);
     });
     try { localStorage.setItem("lang", lang); } catch (_) {}
+    if (typeof rulesModal !== "undefined" && !rulesModal.hidden) renderRules();
   }
   window.setLang = setLang;
+
+
+  const RULES = {"ru": {"title": "Правила приёма музыкальных заявок", "intro": "Эти правила действуют для всех заявок на RUSONG TV: Project Restored. Отправляя заявку, вы подтверждаете, что прочитали и приняли их.", "sections": [{"h": "1. Общие положения", "items": [["1.1.", "Заявка — это предложение клипа для ротации канала. Каждая заявка проходит ручную модерацию; отправка не гарантирует попадание в эфир."], ["1.2.", "Решение модератора окончательное. Причину отклонения мы можем не сообщать."]]}, {"h": "2. Требования к контенту", "items": [["2.1.", "Возраст. Принимаются только клипы и треки с возрастной маркировкой не выше 16+: без жёсткой лексики, откровенных сцен и сцен насилия."], ["2.2.", "Закон. Мы соблюдаем законодательство РФ. Материалы, нарушающие его, не рассматриваются и отклоняются."], ["2.3.", "Мемы и тренды. Треки из мемов и трендов TikTok и подобный контент отклоняются: нам не нужен мусор в эфире."]]}, {"h": "3. Ограничения по программам", "items": [["3.1.", "Клипы для программы Baby Time не принимаются."]]}, {"h": "4. Оформление заявки", "items": [["4.1.", "Указывайте реального исполнителя и прямую проверяемую ссылку на конкретный клип на YouTube или VK."], ["4.2.", "Спам, повторные заявки и случайные перезаливы не рассматриваются."], ["4.3.", "Совпадение в музыкальном каталоге не гарантирует одобрения."]]}, {"h": "5. Изменения", "items": [["5.1.", "Мы можем изменять эти правила. Актуальная версия всегда доступна на этой странице."]]}]}, "en": {"title": "Music Request Rules", "intro": "These rules apply to all requests on RUSONG TV: Project Restored. By submitting a request you confirm that you have read and accepted them.", "sections": [{"h": "1. General", "items": [["1.1.", "A request is a suggestion of a clip for the channel's rotation. Every request is reviewed manually; submitting one does not guarantee airtime."], ["1.2.", "The moderator's decision is final. We may not give a reason for rejection."]]}, {"h": "2. Content requirements", "items": [["2.1.", "Age. Only clips and tracks rated 16+ or lower are accepted: no strong language, explicit scenes or violence."], ["2.2.", "Law. We comply with Russian law. Material that violates it is not considered and is rejected."], ["2.3.", "Memes and trends. Tracks from TikTok memes and trends, and similar content, are rejected. We do not want junk on air."]]}, {"h": "3. Programme restrictions", "items": [["3.1.", "Clips for the Baby Time programme are not accepted."]]}, {"h": "4. Submitting a request", "items": [["4.1.", "Give the real artist name and a direct, verifiable link to a specific YouTube or VK clip."], ["4.2.", "Spam, duplicate requests and random re-uploads are not considered."], ["4.3.", "A match in the music catalogue does not guarantee approval."]]}, {"h": "5. Changes", "items": [["5.1.", "We may change these rules. The current version is always available on this page."]]}]}};
+
+  function renderRules() {
+    const data = RULES[lang] || RULES.ru;
+    document.getElementById("rulesModalTitle").textContent = data.title;
+    const body = document.getElementById("rulesBody");
+    body.replaceChildren();
+    const intro = document.createElement("p");
+    intro.className = "rules-intro";
+    intro.textContent = data.intro;
+    body.appendChild(intro);
+    data.sections.forEach((section) => {
+      const h = document.createElement("h3");
+      h.textContent = section.h;
+      body.appendChild(h);
+      section.items.forEach(([num, text]) => {
+        const p = document.createElement("p");
+        p.className = "rules-item";
+        const n = document.createElement("span");
+        n.className = "rules-num";
+        n.textContent = num;
+        p.appendChild(n);
+        p.appendChild(document.createTextNode(" " + text));
+        body.appendChild(p);
+      });
+    });
+  }
+
+  const rulesModal = document.getElementById("rulesModal");
+  const rulesAgree = document.getElementById("rulesAgree");
+  let rulesOpener = null;
+  function openRules() {
+    rulesOpener = document.activeElement;
+    renderRules();
+    rulesModal.hidden = false;
+    document.body.classList.add("rules-open");
+    document.getElementById("rulesBody").scrollTop = 0;
+    document.getElementById("rulesAccept").focus();
+  }
+  function closeRules() {
+    rulesModal.hidden = true;
+    document.body.classList.remove("rules-open");
+    if (rulesOpener && rulesOpener.focus) rulesOpener.focus();
+  }
+  document.getElementById("openRules").addEventListener("click", openRules);
+  document.getElementById("rulesClose").addEventListener("click", closeRules);
+  document.getElementById("rulesDismiss").addEventListener("click", closeRules);
+  document.getElementById("rulesAccept").addEventListener("click", () => {
+    rulesAgree.checked = true;
+    if (statusEl.classList.contains("error")) showStatus("", "");
+    closeRules();
+  });
+  rulesModal.addEventListener("click", (event) => { if (event.target === rulesModal) closeRules(); });
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !rulesModal.hidden) closeRules(); });
 
   function showStatus(message, kind) {
     statusEl.textContent = message;
@@ -260,6 +317,11 @@
     if (!validClipUrl(clipUrl)) {
       showStatus(tr("errClip"), "error");
       document.getElementById("clipUrl").focus();
+      return;
+    }
+    if (!rulesAgree.checked) {
+      showStatus(tr("errRules"), "error");
+      rulesAgree.focus();
       return;
     }
     if (!configured()) {
