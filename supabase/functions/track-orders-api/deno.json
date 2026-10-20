@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "@neondatabase/serverless": "npm:@neondatabase/serverless@1.0.2"
+  },
+  "compilerOptions": { "strict": true }
+}
