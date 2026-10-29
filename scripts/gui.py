@@ -111,7 +111,7 @@ def api_golive(b):
 
 def api_repeats(b):
     token = (b.get("token") or os.environ.get("VK_TOKEN") or "").strip()
-    n, changed = UR.update_repeats(token, ROOT, int(b.get("owner") or -232964863), int(b.get("limit") or 24))
+    n, changed = UR.update_repeats(token, ROOT, int(b.get("owner") or 0), int(b.get("limit") or 24))
     msg = "repeats.json обновлён: %d записей" % n if changed else "Без изменений (%d записей)" % n
     if changed and b.get("push"):
         GL.git_push(ROOT, ["repeats.json"], "Update repeats.json"); msg += "; отправлено в git"

@@ -140,7 +140,7 @@ summary{cursor:pointer;color:var(--muted);font-size:.9rem;margin-bottom:8px}
       <p class="hint">Подтягивает завершённые эфиры из видео группы VK в repeats.json. Обычно это делает GitHub Action каждые 15 минут; кнопка нужна, чтобы обновить сразу. Токен нигде не сохраняется.</p>
       <div class="grid">
         <label>VK_TOKEN<input id="vkToken" type="password" autocomplete="off" placeholder="токен (или переменная VK_TOKEN)"></label>
-        <label>ID группы<input id="owner" value="-232964863"></label>
+        <label>ID группы<input id="owner" value="" placeholder="-12345678"></label>
         <label>Сколько хранить<input id="limit" type="number" value="24"></label>
       </div>
       <label class="chk" style="margin-bottom:14px"><input type="checkbox" id="pushRep"> отправить в git</label>
