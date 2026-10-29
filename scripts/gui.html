@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTV: управление эфиром</title>
+<style>
+:root{--bg:#0d0907;--panel:#17110d;--panel2:#1e1611;--line:#33281f;--text:#f4f1ef;--muted:#a99d94;--accent:#ff6a00;--accent2:#ff8a2d;--ok:#3ddc84;--bad:#ff6b5e;--warn:#ffc247}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh}
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 24px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#1a100a,#0d0907)}
+header h1{margin:0;font-size:1.15rem;letter-spacing:.04em;text-transform:uppercase}
+header h1 b{color:var(--accent)}
+header .root{margin-left:auto;color:var(--muted);font-size:.85rem;overflow-wrap:anywhere}
+nav{display:flex;gap:4px;padding:0 24px;border-bottom:1px solid var(--line);background:var(--panel);overflow-x:auto}
+nav button{background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:14px 18px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
+nav button:hover{color:var(--text)}
+nav button.on{color:#fff;border-color:var(--accent)}
+main{max-width:1100px;margin:0 auto;padding:24px}
+section{display:none}
+section.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px}
+.card h2{margin:0 0 4px;font-size:1.05rem}
+.hint{color:var(--muted);font-size:.88rem;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:12px}
+label{display:grid;gap:5px;color:var(--muted);font-size:.85rem}
+input,select,textarea{width:100%;background:#0f0a07;border:1px solid #433327;border-radius:7px;color:var(--text);padding:9px 11px;font:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+textarea{min-height:70px;font:13px/1.4 ui-monospace,Consolas,monospace;resize:vertical}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:8px 16px;border-radius:8px;border:1px solid #4a3a2d;background:var(--panel2);color:var(--text);font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--accent2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent2)}
+.btn.danger{border-color:#7a3a35;color:#ffb3ab}
+.btn:disabled{opacity:.5;cursor:wait}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.drop{border:2px dashed #4a3a2d;border-radius:10px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;margin-bottom:12px;transition:.15s}
+.drop:hover,.drop.over{border-color:var(--accent);color:var(--text);background:#1c120b}
+.drop b{color:var(--text)}
+.drop .fn{margin-top:6px;color:var(--accent2);font-weight:600;overflow-wrap:anywhere}
+details{margin-bottom:12px}
+summary{cursor:pointer;color:var(--muted);font-size:.9rem;margin-bottom:8px}
+.tbl{width:100%;border-collapse:collapse;margin-top:6px}
+.tbl th{text-align:left;color:var(--muted);font-weight:600;font-size:.8rem;padding:6px 6px;border-bottom:1px solid var(--line)}
+.tbl td{padding:4px;border-bottom:1px solid #261c15;vertical-align:middle}
+.tbl input,.tbl select{padding:6px 8px;border-color:transparent;background:#120c08}
+.tbl input:hover,.tbl select:hover{border-color:#433327}
+.tbl td.t{width:104px}.tbl td.k{width:140px}.tbl td.x{width:78px;text-align:center;white-space:nowrap}
+.tbl .del{background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer;border-radius:6px}
+.tbl .del:hover{color:var(--bad);background:#241410}
+.tbl tr.svc td.a input{opacity:.35}
+.warns{margin:0 0 10px;padding:10px 14px;border-left:3px solid var(--warn);background:#221a0c;color:#ffe3a3;font-size:.9rem;border-radius:0 6px 6px 0}
+.warns:empty{display:none}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;border:1px solid #4a3a2d;font-size:.78rem;color:var(--muted);margin-right:6px}
+.badge.live{color:var(--ok);border-color:#2b6b47}.badge.idle{color:var(--warn);border-color:#6e5a25}
+#log{background:#0a0705;border:1px solid var(--line);border-radius:10px;margin:0 24px 24px;padding:12px 16px;min-height:80px;max-height:220px;overflow:auto;font:13px/1.5 ui-monospace,Consolas,monospace}
+#log div{white-space:pre-wrap;overflow-wrap:anywhere}
+#log .ok{color:var(--ok)}#log .err{color:var(--bad)}#log .inf{color:var(--muted)}
+.chk{display:flex;gap:8px;align-items:center;color:var(--text);font-size:.92rem}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+.sum{color:var(--muted);font-size:.9rem;margin:8px 0}
+@media(max-width:640px){main{padding:14px}header,nav{padding-left:14px;padding-right:14px}#log{margin:0 14px 16px}.tbl td.a,.tbl td.b{min-width:140px}.tbl{display:block;overflow-x:auto}}
+</style>
+</head>
+<body>
+<header>
+  <h1><b>BTV</b> · управление эфиром</h1>
+  <div id="statusBadges"></div>
+  <div class="root" id="root"></div>
+</header>
+<nav id="tabs">
+  <button class="on" data-tab="tl">1. Треклист из проекта</button>
+  <button data-tab="live">2. В эфир</button>
+  <button data-tab="rep">3. Повторы</button>
+</nav>
+<main>
+  <!-- ───── Треклист ───── -->
+  <section id="tab-tl" class="on">
+    <div class="card">
+      <h2>Файл проекта или таймлайна</h2>
+      <p class="hint">EDL, FCP 7 XML, FCPXML, OTIO или текст. Проект Resolve (.drp/.drt) напрямую не читается — выгрузите таймлайн в один из этих форматов (File → Export → Timeline…).</p>
+      <div class="drop" id="drop"><b>Перетащите файл сюда</b> или нажмите, чтобы выбрать<div class="fn" id="fname"></div></div>
+      <input type="file" id="file" accept=".edl,.xml,.fcpxml,.otio,.txt,.drp,.drt,.aaf" hidden>
+      <div class="grid">
+        <label>Название эфира<input id="title" placeholder="Эфир 1"></label>
+        <label>Длительность (ЧЧ:ММ:СС)<input id="duration" placeholder="авто"></label>
+        <label>Частота кадров<input id="fps" placeholder="авто (EDL — 25)"></label>
+        <label>Начало таймлинии (EDL)<input id="startTc" value="01:00:00:00"></label>
+        <label>Видеодорожка (XML/OTIO)<input id="track" type="number" min="1" value="1"></label>
+        <label>Мин. длина трека, с<input id="minTrack" type="number" min="0" value="30"></label>
+      </div>
+      <details><summary>Правила для служебных клипов (необязательно)</summary>
+        <textarea id="rules" placeholder='[["Рекламный блок|adsstart", "ad"], ["ночноевещание|rock-party-time", "promo"], ["EBU Color", "tech"]]'></textarea>
+        <p class="hint">Виды: ad (реклама), promo (заставки), wait (ожидание), tech (техника), skip (пропустить), music (принудительно трек). Работает в режиме «нарезка», когда в файле нет маркеров.</p>
+      </details>
+      <div class="row"><button class="btn primary" id="parseBtn">Прочитать файл</button>
+        <select id="loadSel" style="width:auto;min-width:200px"><option value="">…или открыть сохранённый эфир</option></select></div>
+    </div>
+
+    <div class="card" id="resultCard" hidden>
+      <h2>Треклист <span id="resInfo" class="badge"></span></h2>
+      <p class="hint">Время — от начала эфира. Поправьте исполнителя и название, поменяйте вид блока, добавьте или удалите строки.</p>
+      <div class="warns" id="warns"></div>
+      <datalist id="roles"><option value="start"><option value="transition"><option value="to_ad"><option value="back"><option value="end"><option value="part1"><option value="part2"></datalist><table class="tbl"><thead><tr><th>Время</th><th>Вид</th><th>Исполнитель / текст блока</th><th>Название</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+      <div class="row" style="margin-top:12px"><button class="btn" id="addRow">+ строка</button></div>
+      <div class="sum" id="sum"></div>
+      <div class="row" style="margin-top:6px">
+        <label style="flex:1;min-width:200px">Имя файла эфира<input id="saveName" placeholder="ep01"></label>
+        <label class="chk" style="margin-top:20px"><input type="checkbox" id="pushSave"> отправить в git</label>
+        <button class="btn primary" id="saveBtn" style="margin-top:20px">Сохранить в episodes/</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───── Эфир ───── -->
+  <section id="tab-live">
+    <div class="card">
+      <h2>Запуск «Сейчас в эфире»</h2>
+      <p class="hint">Нажимайте в тот момент, когда в OBS реально стартует первый файл эфира. Виджет на сайте обновится примерно через минуту.</p>
+      <div class="grid">
+        <label>Эфир<select id="epSel"></select></label>
+        <label>Задержка VK Live, с<input id="offset" type="number" step="1" value="0"></label>
+        <label>Запланировать на (необязательно)<input id="at" type="datetime-local"></label>
+      </div>
+      <label class="chk" style="margin-bottom:14px"><input type="checkbox" id="pushLive" checked> сразу отправить в git (иначе сайт не обновится)</label>
+      <div class="row">
+        <button class="btn primary" data-go="live">▶ В эфир</button>
+        <button class="btn" data-go="idle">⏸ Ожидание (idle)</button>
+        <button class="btn danger" data-go="stop">■ Остановить виджет</button>
+      </div>
+    </div>
+    <div class="card"><h2>Сейчас на сайте</h2><div id="curState" class="sum">—</div></div>
+  </section>
+
+  <!-- ───── Повторы ───── -->
+  <section id="tab-rep">
+    <div class="card">
+      <h2>Обновить список повторов</h2>
+      <p class="hint">Подтягивает завершённые эфиры из видео группы VK в repeats.json. Обычно это делает GitHub Action каждые 15 минут; кнопка нужна, чтобы обновить сразу. Токен нигде не сохраняется.</p>
+      <div class="grid">
+        <label>VK_TOKEN<input id="vkToken" type="password" autocomplete="off" placeholder="токен (или переменная VK_TOKEN)"></label>
+        <label>ID группы<input id="owner" value="-232964863"></label>
+        <label>Сколько хранить<input id="limit" type="number" value="24"></label>
+      </div>
+      <label class="chk" style="margin-bottom:14px"><input type="checkbox" id="pushRep"> отправить в git</label>
+      <button class="btn primary" id="repBtn">Обновить повторы</button>
+      <div class="sum" id="repState"></div>
+    </div>
+  </section>
+</main>
+<div id="log"></div>
+
+<script>
+const TOKEN = "__TOKEN__";
+const $ = (id) => document.getElementById(id);
+let episode = {title: "", tracks: []};
+let file = null, fileText = "";
+
+function log(msg, cls) { const d = document.createElement("div"); d.className = cls || "inf"; d.textContent = new Date().toLocaleTimeString() + "  " + msg; $("log").prepend(d); }
+async function api(path, body) {
+  const opt = body === undefined ? {headers: {"X-Token": TOKEN}} : {method: "POST", headers: {"X-Token": TOKEN, "Content-Type": "application/json"}, body: JSON.stringify(body)};
+  const r = await fetch(path, opt); const j = await r.json().catch(() => ({ok: false, error: "Ошибка ответа сервера"}));
+  if (!j.ok) throw new Error(j.error || "Ошибка");
+  return j;
+}
+async function run(btn, fn) {
+  if (btn) btn.disabled = true;
+  try { await fn(); } catch (e) { log("✕ " + e.message, "err"); } finally { if (btn) btn.disabled = false; }
+}
+
+/* вкладки */
+document.querySelectorAll("#tabs button").forEach((b) => b.onclick = () => {
+  document.querySelectorAll("#tabs button").forEach((x) => x.classList.toggle("on", x === b));
+  document.querySelectorAll("main section").forEach((s) => s.classList.toggle("on", s.id === "tab-" + b.dataset.tab));
+});
+
+/* состояние */
+async function refresh() {
+  const s = await api("/api/state");
+  $("root").textContent = "Папка сайта: " + s.root + (s.git ? "" : "  (нет git — отправка отключена)");
+  const m = s.tracklist.mode;
+  $("statusBadges").innerHTML = m === "live" ? '<span class="badge live">в эфире</span>' : m === "idle" ? '<span class="badge idle">ожидание</span>' : '<span class="badge">виджет выключен</span>';
+  $("curState").textContent = m === "live" ? `В эфире: «${s.tracklist.title || "без названия"}», старт ${new Date(s.tracklist.start).toLocaleString()}, треков: ${s.tracklist.tracks}` : m === "idle" ? "Виджет показывает «ожидание эфира»" : "Виджет выключен";
+  for (const id of ["epSel", "loadSel"]) {
+    const sel = $(id), cur = sel.value;
+    sel.innerHTML = (id === "loadSel" ? '<option value="">…или открыть сохранённый эфир</option>' : "") + s.episodes.map((e) => `<option value="${e}">${e}</option>`).join("");
+    if (cur && s.episodes.includes(cur)) sel.value = cur;
+  }
+  if (!s.git) { $("pushSave").disabled = $("pushLive").disabled = $("pushRep").disabled = true; $("pushLive").checked = false; }
+  $("repState").textContent = "Сейчас в repeats.json: " + s.repeats + " записей" + (s.env_token ? "; токен найден в переменной VK_TOKEN" : "");
+}
+
+/* файл */
+$("drop").onclick = () => $("file").click();
+["dragover", "dragenter"].forEach((ev) => $("drop").addEventListener(ev, (e) => { e.preventDefault(); $("drop").classList.add("over"); }));
+["dragleave", "drop"].forEach((ev) => $("drop").addEventListener(ev, (e) => { e.preventDefault(); $("drop").classList.remove("over"); }));
+$("drop").addEventListener("drop", (e) => { if (e.dataTransfer.files[0]) pick(e.dataTransfer.files[0]); });
+$("file").onchange = () => { if ($("file").files[0]) pick($("file").files[0]); };
+async function pick(f) {
+  file = f; $("fname").textContent = f.name;
+  fileText = /\.(drp|drt|aaf|otioz)$/i.test(f.name) ? "" : await f.text();
+  if (!$("title").value) $("title").value = f.name.replace(/\.[^.]+$/, "");
+  if (!$("saveName").value) $("saveName").value = f.name.replace(/\.[^.]+$/, "").replace(/[^\w\-. ]+/g, "_");
+  $("parseBtn").click();
+}
+$("parseBtn").onclick = () => run($("parseBtn"), async () => {
+  if (!file) throw new Error("Сначала выберите файл");
+  const r = await api("/api/parse", {filename: file.name, content: fileText, fps: $("fps").value, startTc: $("startTc").value, track: $("track").value,
+    minTrack: $("minTrack").value, rules: $("rules").value, title: $("title").value, duration: $("duration").value});
+  episode = r.episode; renderRows();
+  $("resInfo").textContent = r.fmt + " · " + ({markers: "маркеры", cutlist: "нарезка (имена клипов)", text: "текст"})[r.mode];
+  $("resultCard").hidden = false;
+  log(`✓ ${r.fmt}: ${episode.tracks.length} записей, режим «${r.mode}»` + (r.warnings.length ? `, предупреждений: ${r.warnings.length}` : ""), "ok");
+  $("resultCard").scrollIntoView({behavior: "smooth"});
+});
+$("loadSel").onchange = () => { const n = $("loadSel").value; if (!n) return; run(null, async () => {
+  const r = await api("/api/episode?name=" + encodeURIComponent(n)); episode = r.episode; $("title").value = episode.title || "";
+  $("saveName").value = n; $("resInfo").textContent = "сохранённый эфир"; $("resultCard").hidden = false; renderRows(); log("Открыт эфир " + n, "ok"); }); };
+
+/* таблица */
+const KIND = {"": "Трек", wait: "Ожидание", ad: "Реклама", promo: "Заставки", tech: "Техника", show: "Заставка программы"};
+const fmt = (s) => { s = Math.max(0, Math.round(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" : "") + String(m).padStart(h ? 2 : 1, "0") + ":" + String(x).padStart(2, "0"); };
+const parseT = (v) => { const p = String(v).trim().split(":").map(Number); if (p.some(isNaN) || !p.length) return null; return p.reduce((a, n) => a * 60 + n, 0); };
+function renderRows() {
+  const tb = $("rows"); tb.replaceChildren();
+  episode.tracks.forEach((t, i) => {
+    const tr = document.createElement("tr"); const svc = !!t.kind, sh = t.kind === "show"; if (svc) tr.className = "svc";
+    tr.innerHTML = `<td class="t"><input value="${fmt(t.t)}" data-f="t"></td>
+      <td class="k"><select data-f="kind">${Object.entries(KIND).map(([k, v]) => `<option value="${k}"${(t.kind || "") === k ? " selected" : ""}>${v}</option>`).join("")}</select></td>
+      <td class="a"><input data-f="a" placeholder="${sh ? "Название программы" : svc ? "свой текст (необязательно — будет шутка)" : "Исполнитель"}"></td>
+      <td class="b"><input data-f="b" placeholder="${sh ? "роль: start, transition, to_ad, back, end, part1" : "Название"}" list="roles"${svc && !sh ? " disabled" : ""}></td>
+      <td class="x">${svc ? "" : '<button class="del" title="Поменять исполнителя и название местами" data-f="swap">⇄</button>'}<button class="del" title="Удалить" data-f="del">×</button></td>`;
+    tr.querySelector('[data-f="a"]').value = sh ? (t.show || "") : svc ? (t.text || "") : (t.artist || "");
+    tr.querySelector('[data-f="b"]').value = sh ? (t.role || "") : svc ? "" : (t.title || "");
+    tr.addEventListener("change", (e) => {
+      const f = e.target.dataset.f, row = episode.tracks[i];
+      if (f === "t") { const v = parseT(e.target.value); if (v === null) { e.target.value = fmt(row.t); return; } row.t = v; }
+      if (f === "kind") { const k = e.target.value; if (k) { row.kind = k; if (k === "show") { row.show = row.artist || row.text || ""; row.role = "start"; delete row.text; } else row.text = row.artist || row.title || ""; delete row.artist; delete row.title; } else { delete row.kind; row.artist = row.text || ""; row.title = ""; delete row.text; } renderRows(); return; }
+      if (f === "a") { if (row.kind === "show") row.show = e.target.value; else if (row.kind) row.text = e.target.value; else row.artist = e.target.value; }
+      if (f === "b") { if (row.kind === "show") row.role = e.target.value.trim() || "start"; else row.title = e.target.value; }
+      summary();
+    });
+    const sw = tr.querySelector('[data-f="swap"]'); if (sw) sw.onclick = () => { const r = episode.tracks[i]; [r.artist, r.title] = [r.title, r.artist]; renderRows(); };
+    tr.querySelector('[data-f="del"]').onclick = () => { episode.tracks.splice(i, 1); renderRows(); };
+    tb.appendChild(tr);
+  });
+  summary();
+}
+function summary() {
+  const n = episode.tracks.length, w = episode.tracks.filter((t) => !t.kind && (!t.artist || /^[^\p{L}]+$/u.test(t.title || ""))).length;
+  $("warns").textContent = w ? `⚠ Проверьте имена: у ${w} записей нет исполнителя или название похоже на номер файла.` : "";
+  $("sum").textContent = `Записей: ${n}` + (episode.duration ? `, длительность ${fmt(episode.duration)}` : "");
+}
+$("addRow").onclick = () => { const last = episode.tracks.at(-1); episode.tracks.push({t: last ? last.t + 180 : 0, artist: "", title: ""}); renderRows(); };
+$("saveBtn").onclick = () => run($("saveBtn"), async () => {
+  episode.title = $("title").value || episode.title || "";
+  if ($("duration").value.trim()) { const p = String($("duration").value).trim().split(":").map(Number); episode.duration = p.reduce((a, n) => a * 60 + n, 0); }
+  const r = await api("/api/save", {name: $("saveName").value, episode, push: $("pushSave").checked});
+  log("✓ " + r.message, "ok"); await refresh(); $("epSel").value = r.name;
+});
+
+/* эфир */
+document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => run(b, async () => {
+  const mode = b.dataset.go;
+  if (mode === "live" && !$("epSel").value) throw new Error("Нет сохранённых эфиров — сначала сделайте треклист на вкладке 1");
+  const at = $("at").value ? $("at").value.replace("T", " ") : "";
+  const r = await api("/api/golive", {mode, episode: $("epSel").value, offset: $("offset").value, at, push: $("pushLive").checked});
+  log("✓ " + r.message, "ok"); await refresh();
+}));
+
+/* повторы */
+$("repBtn").onclick = () => run($("repBtn"), async () => {
+  log("Запрос к VK…", "inf");
+  const r = await api("/api/repeats", {token: $("vkToken").value, owner: $("owner").value, limit: $("limit").value, push: $("pushRep").checked});
+  log("✓ " + r.message, "ok"); await refresh();
+});
+
+refresh().catch((e) => log("✕ " + e.message, "err"));
+log("Готово. Выберите файл проекта на вкладке 1.", "inf");
+</script>
+</body>
+</html>

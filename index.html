@@ -122,6 +122,10 @@
       </div>
       <a class="video-fallback" href="https://live.vkvideo.ru/rtvrestored" target="_blank" rel="noopener" data-i18n="video_fallback">Открыть эфир</a>
       <span class="video-note" data-i18n="video_note">Если плеер заблокирован, используйте прямую ссылку.</span>
+      <section id="nowplaying" class="nowplaying" hidden>
+        <div class="np-now"><span class="np-dot" aria-hidden="true"></span><span class="np-label" id="npLabel">Сейчас в эфире</span><strong id="npNow"></strong></div>
+        <div class="np-prev" id="npPrevWrap" hidden><span data-i18n="np_prev">Недавно играло</span><ol id="npPrev"></ol></div>
+      </section>
     </section>
 
     <!-- О канале -->
@@ -176,6 +180,7 @@
     "footer": "Presented by BM-PR. Not affiliated with BRIDGE MEDIA.",
     "video_fallback": "Open live video",
     "video_note": "If the player is blocked, use this direct link.",
+    "np_prev": "Recently played",
     "hero_tagline": "The Russian-language music channel is coming back",
     "soon_badge": "Coming soon",
     "soon_title": "RUSONG TV is about to go on air",
@@ -200,6 +205,7 @@
     "footer": "Представлено командой BM-PR. Не имеет отношения к BRIDGE MEDIA.",
     "video_fallback": "Открыть эфир",
     "video_note": "Если плеер заблокирован, используйте прямую ссылку.",
+    "np_prev": "Недавно играло",
     "hero_tagline": "Русскоязычный музыкальный канал возвращается",
     "soon_badge": "Скоро",
     "soon_title": "Эфир RUSONG TV скоро начнётся",
@@ -235,5 +241,108 @@
     setLang(savedLang);
   </script>
   <script src="menu.js" defer></script>
+  <script>
+    /* Треклист: tracklist.json — либо {start, offset, tracks:[{t,artist,title}]} (по таймкодам, см. scripts/go_live.py),
+       либо {updated, now, history} (вручную). Виджет скрыт, если трека нет. */
+    (function () {
+      var NP_URL = 'tracklist.json', NP_EVERY = 20000, NP_STALE_MIN = 15;
+      var box = document.getElementById('nowplaying');
+      if (!box || !window.fetch) return;
+      function line(t) { return t ? ((t.artist ? t.artist + ' — ' : '') + (t.title || '')) : ''; }
+      var LANG = function () { return document.documentElement.lang === 'en' ? 'en' : 'ru'; };
+      var KIND = {
+        wait:  { ru: 'Ожидание эфира', en: 'Waiting for the broadcast', jokes: {
+          ru: ['Эфир скоро начнётся. Мы уже здесь — просто репетируем умный вид.', 'Настраиваем антенну методом «чуть левее… ещё левее…».', 'Включаем эфир. Нет, не этот провод.', 'Курьер с хорошим настроением немного задерживается.'],
+          en: ['The broadcast starts soon. We are here, just rehearsing our serious face.', 'Aiming the antenna: “a bit to the left… more to the left…”.', 'Switching on the broadcast. No, not that cable.', 'The courier with the good mood is running a bit late.'] } },
+        ad:    { ru: 'Реклама', en: 'Ad break', jokes: {
+          ru: ['Рекламная пауза: самое время налить чаю.', 'Реклама. Пульт лучше не трогать — мы скоро вернёмся.', 'Несколько слов от спонсоров, и снова музыка.'],
+          en: ['Ad break: a perfect time to make tea.', 'Ads. Leave the remote alone — we will be right back.', 'A few words from our sponsors, then back to the music.'] } },
+        promo: { ru: 'Заставки и анонсы', en: 'Idents and promos', jokes: {
+          ru: ['Заставки и анонсы: смотрим, что будет дальше.', 'Анонсы: следующий эфир уже в предвкушении.', 'Промо-ролики. У нас всё по плану (почти).'],
+          en: ['Idents and promos: a peek at what is coming next.', 'Promos: the next broadcast is already warming up.', 'Promo reel. Everything is going to plan (almost).'] } },
+        tech:  { ru: 'Технические неполадки', en: 'Technical difficulties', jokes: {
+          ru: ['Перезагрузка. А мы ушли на север — в течение 10 минут вернёмся.', 'Не регулируйте ваш телевизор — это мы.', 'Сигнал ушёл прогуляться. Ищем, куда.', 'Технические неполадки. Виноватый уже назначен — кажется, это кабель.'],
+          en: ['Reboot. We went north — back within 10 minutes.', 'Do not adjust your TV set — it is us.', 'The signal went for a walk. We are looking for it.', 'Technical difficulties. The culprit has been chosen — probably the cable.'] } }
+      };
+      /* Заставки программ: роль (начало/переход/на рекламу/с рекламы/конец, у чарта — часть N) × язык; {s} — название программы */
+      var SHOWTXT = {
+        start: { ru: ['В эфире {s}. Начинаем!', 'Встречайте: {s}. Устраивайтесь поудобнее.', '{s} стартует. Пульт можно отложить — сегодня он не понадобится.', 'Эфир передан программе {s}. Музыка уже разогревается.'],
+                 en: ['{s} is on the air. Here we go!', 'Welcome to {s}. Make yourself comfortable.', '{s} kicks off. Put the remote down — you will not need it.', 'The airwaves belong to {s}. The music is already warming up.'] },
+        transition: { ru: ['{s}: следующий блок уже на подходе.', 'Продолжаем {s}. Не переключайтесь — мы проверили, там ничего интересного.', '{s}: переходим к новой порции клипов.', 'Короткий переход, и {s} идёт дальше.'],
+                      en: ['{s}: the next block is on its way.', 'More {s}. Do not switch — we checked, there is nothing better on.', '{s}: here comes a fresh batch of clips.', 'A quick transition, and {s} rolls on.'] },
+        to_ad: { ru: ['{s} уходит на рекламу. Чай сам себя не нальёт.', 'Короткая реклама, и {s} возвращается.', 'Рекламная пауза. {s} вернётся — обещаем.'],
+                 en: ['{s} heads to the ads. The tea will not pour itself.', 'A short ad break, then {s} is back.', 'Ad break. {s} will be right back — we promise.'] },
+        back: { ru: ['Снова {s}! Рекламу пережили, продолжаем.', '{s} возвращается в эфир. Клипы заждались.', 'Мы вернулись: {s} продолжается.'],
+                en: ['{s} is back! We survived the ads, let us go on.', '{s} returns to the air. The clips have been waiting.', 'We are back: {s} continues.'] },
+        end: { ru: ['{s} завершается. Спасибо, что были с нами!', 'На сегодня {s} всё. Дальше — по расписанию.', 'Конец программы {s}. Не расходимся — эфир продолжается.'],
+               en: ['{s} is wrapping up. Thanks for watching!', 'That is all for {s} today. More on the schedule ahead.', 'End of {s}. Stay tuned — the broadcast goes on.'] }
+      };
+      function showText(now, L) {
+        var role = now.role || 'start', m = /^part(\d+)$/.exec(role), pool, n = Math.floor(now.t || 0);
+        if (m) {
+          pool = L === 'en' ? ['{s}: part ' + m[1] + '. Let the countdown begin!', 'Part ' + m[1] + ' of {s}. Do not touch the remote.', '{s} — part ' + m[1] + '.']
+                            : ['{s}: часть ' + m[1] + '. Отсчёт пошёл!', 'Часть ' + m[1] + ' — {s}. Пульт не трогаем.', '{s} — часть ' + m[1] + '.'];
+        } else pool = (SHOWTXT[role] || SHOWTXT.start)[L];
+        return pool[n % pool.length].replace(/\{s\}/g, now.show || '');
+      }
+      function show(label, text, hist) {
+        document.getElementById('npLabel').textContent = label;
+        document.getElementById('npNow').textContent = text;
+        var ol = document.getElementById('npPrev'); ol.innerHTML = '';
+        hist.slice(0, 5).forEach(function (t) { var li = document.createElement('li'); li.textContent = line(t); ol.appendChild(li); });
+        document.getElementById('npPrevWrap').hidden = !ol.children.length;
+        box.hidden = false;
+      }
+      /* Источник №1 — Supabase (live_state, пишет админка). №2 — tracklist.json из репозитория. */
+      var SB_URL = 'https://fmwagmqysszshcvaddwo.supabase.co', SB_KEY = 'sb_publishable_ft2uIm5ltqrbPGD2ROCzdw_crjiE9Ke';
+      function loadState() {
+        var file = function () { return fetch(NP_URL + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }); };
+        return fetch(SB_URL + '/rest/v1/live_state?id=eq.1&select=data', { cache: 'no-store', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+          .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+          .then(function (rows) { var d = rows && rows[0] && rows[0].data; if (!d || !Object.keys(d).length) throw 0; return d; })
+          .catch(file);
+      }
+      function tick() {
+        loadState().then(function (d) {
+          var now = null, hist = [], countdown = null;
+          if (d && d.idle) {
+            now = { kind: 'wait', t: 0 };                       /* idle-файл в OBS: эфир ещё не начался / уже закончился */
+          } else if (d && d.start && d.tracks && d.tracks.length) {
+            /* режим «по таймкодам»: текущий трек считается от момента старта эфира */
+            var el = (Date.now() - new Date(d.start).getTime()) / 1000 - (d.offset || 0);
+            var idx = -1;
+            for (var i = 0; i < d.tracks.length; i++) { if (d.tracks[i].t <= el) idx = i; }
+            if (el < 0) {
+              now = { kind: 'wait', t: 0 }; countdown = -el;    /* старт запланирован: ждём */
+            } else if (idx >= 0) {
+              var last = d.tracks[d.tracks.length - 1].t;
+              if (d.end != null && el > d.end) now = { kind: 'wait', t: 0 };   /* эфир кончился -> снова idle */
+              else if (d.end == null && el > last + 600) now = null;          /* длительность не задана -> прячем */
+              else { now = d.tracks[idx]; hist = d.tracks.slice(0, idx).filter(function (x) { return !x.kind; }).reverse(); }
+            }
+          } else if (d && d.now && d.updated && (Date.now() - new Date(d.updated).getTime()) < NP_STALE_MIN * 60000) {
+            now = d.now; hist = d.history || [];   /* ручной режим */
+          }
+          if (!now) { box.hidden = true; return; }
+          var L = LANG();
+          if (now.kind === 'show') {
+            show(now.show || 'BRIDGE TV', showText(now, L), hist);
+          } else if (now.kind && KIND[now.kind]) {
+            var k = KIND[now.kind], js = k.jokes[L];
+            var txt = now.text || js[Math.floor(now.t || 0) % js.length];
+            if (countdown != null) {
+              var m = Math.floor(countdown / 60), sec = Math.floor(countdown % 60);
+              txt += (L === 'en' ? '  Starts in ' : '  До начала: ') + (m >= 60 ? Math.floor(m / 60) + ':' + ('0' + m % 60).slice(-2) : m) + ':' + ('0' + sec).slice(-2);
+            }
+            show(k[L], txt, hist);
+          } else {
+            show(L === 'en' ? 'On air now' : 'Сейчас в эфире', line(now), hist);
+          }
+        }).catch(function () { box.hidden = true; });
+      }
+      tick(); setInterval(tick, NP_EVERY);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) tick(); });
+    })();
+  </script>
 </body>
 </html>

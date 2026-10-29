@@ -583,3 +583,14 @@ a,button,select{-webkit-tap-highlight-color:transparent;touch-action:manipulatio
   .history-today,.projects{padding-left:14px;padding-right:14px}
 }
 @media (hover:none){ .soon-btn:hover{transform:none} }
+
+/* ---------- Треклист «Сейчас в эфире» ---------- */
+.nowplaying{margin-top:14px;padding:12px 16px;background:rgba(0,0,0,.04);border-radius:10px;font-size:15px}
+.nowplaying[hidden],.np-prev[hidden]{display:none}
+.np-now{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.np-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);animation:npPulse 1.6s ease-in-out infinite}
+.np-label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#777}
+.np-prev{margin-top:8px;font-size:13px;color:#666}
+.np-prev ol{margin:4px 0 0;padding-left:20px}
+@keyframes npPulse{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.np-dot{animation:none}}
